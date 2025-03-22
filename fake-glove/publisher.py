@@ -1,9 +1,22 @@
 import paho.mqtt.client as mqtt
+import argparse
 import csv
 import json
 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '-a', '--addr', type=str, default="test.mosquitto.org",
+    help="Endereço do broker MQTT."
+)
+parser.add_argument(
+    '-p', '--port', type=int, default=1883,
+    help="Porto do broker MQTT."
+)
+
+args = parser.parse_args()
+
 mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-mqttc.connect("test.mosquitto.org", 1883)
+mqttc.connect(args.addr, args.port)
 
 mqttc.loop_start()
 
@@ -26,6 +39,3 @@ for row in reader:
     stringified = json.dumps(content)
 
     mqttc.publish("case/raw/phys", stringified)
-
-if __name__ == "__main__":
-    pass
