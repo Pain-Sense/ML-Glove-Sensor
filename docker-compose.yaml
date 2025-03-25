@@ -28,6 +28,16 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
 
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto
+    volumes:    # Mount configuration file into container's volume.
+      - ./docker/mosquitto/mosquitto-no-auth.conf:/mosquitto/config/mosquitto.conf
+    ports:
+      - 1883:1883 # Unencrypted, unauthenticated
+      #- 1884:1884  # unencrypted, authenticated
+      #- 8885:8885  # encrypted, authenticated
+
   influxdb:
     container_name: influxdb
     ports:
