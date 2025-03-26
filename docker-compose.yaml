@@ -37,9 +37,16 @@ services:
           - '8086:8086'
       image: 'docker.io/influxdb:2.2.0'
 
+  mysql:
+      container_name: mysql
+      ports:
+          - '3306:3306'
+      image: 'docker.io/mysql:8.0'
+
   grafana:
     image: grafana/grafana-oss:8.4.3
     depends_on:
       - influxdb
+      - mysql
     ports:
       - 3000:3000
