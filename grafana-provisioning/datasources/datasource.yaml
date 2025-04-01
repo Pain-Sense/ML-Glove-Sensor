@@ -1,0 +1,28 @@
+datasources:
+  - name: InfluxDB
+    version: 2
+    orgId: 1
+    type: infuxdb
+    access: proxy
+    url: http://influxdb:8086
+    basicAuth: true
+    jsonData:
+      defaultBucket: bucket1
+      httpMode: GET
+      organization: UA
+      version: Flux
+    secureJsonData:
+      token: abc
+
+  - name: MySQL
+    orgId: 1
+    type: mysql
+    access: proxy
+    url: mysql:8086
+    database: sql_data
+    user: admin
+    jsonData:
+      tlsAuth: false
+      tlsAuthWithCert: false
+    secureJsonData:
+      password: admin
