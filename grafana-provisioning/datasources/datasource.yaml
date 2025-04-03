@@ -2,10 +2,10 @@ datasources:
   - name: InfluxDB
     version: 2
     orgId: 1
-    type: infuxdb
+    type: influxdb
     access: proxy
     url: http://influxdb:8086
-    basicAuth: true
+    isDefault: true
     jsonData:
       defaultBucket: bucket1
       httpMode: GET
@@ -18,7 +18,7 @@ datasources:
     orgId: 1
     type: mysql
     access: proxy
-    url: mysql:8086
+    url: mysql:3306
     database: sql_data
     user: admin
     jsonData:
