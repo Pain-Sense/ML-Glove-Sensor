@@ -5,8 +5,10 @@ services:
     ports:
     - "9092:9092"
     volumes:
-      - ./docker/kafka/kafka-connect-mqtt-8.1.31/kafka-connect-mqtt-assembly-8.1.31.jar:/opt/connectors/kafka-connect-mqtt-assembly-8.1.31.jar
-      - ./docker/kafka/connect-standalone.properties:/opt/kafka/config/connect-standalone.properties
+      - ./docker/kafka/connect-standalone.properties:/opt/kafka/config/connect-standalone.properties:z,ro
+      - ./docker/kafka/kafka-connect-mqtt-8.1.31/kafka-connect-mqtt-assembly-8.1.31.jar:/opt/connectors/kafka-connect-mqtt-assembly-8.1.31.jar:z,ro
+      - ./docker/kafka/kafka-connect-mqtt-8.1.31/source.config:/opt/connectors/config/mqtt-source.config:z,ro
+    cmd: bash -c "/opt/kafka/bin/connect-standalone.sh /opt/kafka/config/connect-standalone.properties /opt/connectors/config/mqtt-source.config"
     environment:
       LOG_DIR: "/tmp/logs"
       environment:
@@ -27,7 +29,7 @@ services:
     container_name: mosquitto
     image: eclipse-mosquitto
     volumes:    # Mount configuration file into container's volume.
-      - ./docker/mosquitto/mosquitto-no-auth.conf:/mosquitto/config/mosquitto.conf
+      - ./docker/mosquitto/mosquitto-no-auth.conf:/mosquitto/config/mosquitto.conf:z,ro
     ports:
       - 1883:1883 # Unencrypted, unauthenticated
       #- 1884:1884  # unencrypted, authenticated
