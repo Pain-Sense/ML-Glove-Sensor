@@ -8,7 +8,7 @@ services:
       - ./docker/kafka/connect-standalone.properties:/opt/kafka/config/connect-standalone.properties:z,ro
       - ./docker/kafka/kafka-connect-mqtt-8.1.31/kafka-connect-mqtt-assembly-8.1.31.jar:/opt/connectors/kafka-connect-mqtt-assembly-8.1.31.jar:z,ro
       - ./docker/kafka/kafka-connect-mqtt-8.1.31/source.config:/opt/connectors/config/mqtt-source.config:z,ro
-    cmd: bash -c "/opt/kafka/bin/connect-standalone.sh /opt/kafka/config/connect-standalone.properties /opt/connectors/config/mqtt-source.config"
+    # cmd: bash -c "/opt/kafka/bin/connect-standalone.sh /opt/kafka/config/connect-standalone.properties /opt/connectors/config/mqtt-source.config"
     environment:
       LOG_DIR: "/tmp/logs"
       environment:
