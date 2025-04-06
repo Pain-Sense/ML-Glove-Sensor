@@ -28,6 +28,7 @@ public class SensorDataProcessor {
             JsonNode jsonNode = objectMapper.readTree(message);
             double bvp = jsonNode.get("bvp").asDouble();
             double gsr = jsonNode.get("gsr").asDouble();
+            int fileNumber = jsonNode.get("file_number").asInt();
 
             // Generate a random ECG value
             double ecg = (0.5 + random.nextDouble()) * (bvp + gsr);
@@ -38,7 +39,6 @@ public class SensorDataProcessor {
             // Send the modified message to the new topic
             String modifiedMessage = objectMapper.writeValueAsString(jsonNode);
 
-            // Sleep for 1 second
             Thread.sleep(1000);
 
             emitter.send(Record.of(UUID.randomUUID().toString(), modifiedMessage));
