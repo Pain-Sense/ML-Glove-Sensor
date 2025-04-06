@@ -28,7 +28,7 @@ def main():
             json_data = get_json_data(row)
             producer.send('SensorData', bytes(f'{json_data}','UTF-8'))
             print(f"Sensor data is sent: {json_data}")
-            time.sleep(0.2)
+            time.sleep(0.1)
 
 
 if __name__ == "__main__":

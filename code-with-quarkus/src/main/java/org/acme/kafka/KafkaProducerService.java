@@ -45,8 +45,6 @@ public class KafkaProducerService {
     }
     }
 
-
-
     @Channel("test")
     Emitter<Record<String, Message>> testEmitter;
     public void Testing(){
