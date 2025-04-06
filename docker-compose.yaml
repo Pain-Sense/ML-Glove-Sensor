@@ -4,11 +4,6 @@ services:
     image: apache/kafka:4.0.0
     ports:
     - "9092:9092"
-    volumes:
-      - ./docker/kafka/connect-standalone.properties:/opt/kafka/config/connect-standalone.properties:z,ro
-      - ./docker/kafka/kafka-connect-mqtt-8.1.31/kafka-connect-mqtt-assembly-8.1.31.jar:/opt/connectors/kafka-connect-mqtt-assembly-8.1.31.jar:z,ro
-      - ./docker/kafka/kafka-connect-mqtt-8.1.31/source.config:/opt/connectors/config/mqtt-source.config:z,ro
-    # cmd: bash -c "/opt/kafka/bin/connect-standalone.sh /opt/kafka/config/connect-standalone.properties /opt/connectors/config/mqtt-source.config"
     environment:
       LOG_DIR: "/tmp/logs"
       environment:
@@ -24,6 +19,16 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_NUM_PARTITIONS: 3
+
+  kafka-connect:
+    container_name: kafka-connect
+    build:
+      context: ./docker/kafka-connect
+      dockerfile: Dockerfile
+    #volumes:
+      #- ./docker/kafka/connect-standalone.properties:/opt/kafka/config/connect-standalone.properties:z,ro
+      #- ./docker/kafka/kafka-connect-mqtt-8.1.31/kafka-connect-mqtt-assembly-8.1.31.jar:/opt/connectors/kafka-connect-mqtt-assembly-8.1.31.jar:z,ro
+      #- ./docker/kafka/kafka-connect-mqtt-8.1.31/source.config:/opt/connectors/config/mqtt-source.config:z,ro
 
   mosquitto:
     container_name: mosquitto

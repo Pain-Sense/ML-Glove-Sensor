@@ -3,10 +3,16 @@ FROM apache/kafka:latest
 ARG STREAM_REACTOR_VERSION="8.1.31"
 
 USER root
-RUN     mkdir -p /opt/connectors/config \
+RUN     mkdir -p /opt/kafka-connect/connectors \
+    &&  mkdir -p /opt/kafka-connect/config \
     &&  wget https://github.com/lensesio/stream-reactor/releases/download/8.1.31/kafka-connect-mqtt-8.1.31.zip -P /tmp \
     &&  unzip /tmp/kafka-connect-mqtt-8.1.31.zip -d /tmp \
-    &&  mv /tmp/kafka-connect-mqtt-8.1.31/kafka-connect-mqtt-assembly-8.1.31.jar /opt/connectors \
-    &&  echo plugin.path=/opt/connectors, >> /opt/kafka/config/connect-standalone.properties \
-    && rm -f /tmp/kafka-connect-mqtt-8.1.31.zip \
-    && rm -rf /tmp/kafka-connect-mqtt-8.1.31
+    &&  mv /tmp/kafka-connect-mqtt-8.1.31/kafka-connect-mqtt-assembly-8.1.31.jar /opt/kafka-connect/connectors/ \
+    &&  rm -f /tmp/kafka-connect-mqtt-8.1.31.zip \
+    &&  rm -rf /tmp/kafka-connect-mqtt-8.1.31
+
+COPY connect-standalone.properties /opt/kafka-connect/config/connect-standalone.properties
+COPY mqtt-source.config /opt/kafka-connect/config/mqtt-source.config
+
+ENTRYPOINT ["/opt/kafka/bin/connect-standalone.sh"]
+CMD ["/opt/kafka-connect/config/connect-standalone.properties", "/opt/kafka-connect/config/mqtt-source.config"]
