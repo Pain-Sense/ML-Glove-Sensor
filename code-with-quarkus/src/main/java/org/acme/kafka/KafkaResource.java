@@ -34,4 +34,11 @@ public class KafkaResource {
         status.put("broker", "localhost:9092");
         return Response.ok(status).build();
     }
+
+    @POST
+    @Path("/test")
+    public Response Testing() {
+        producer.Testing();
+        return Response.accepted().build();
+    }
 }
