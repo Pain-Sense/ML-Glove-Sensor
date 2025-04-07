@@ -1,3 +1,4 @@
+import os
 import time
 import json
 import csv
@@ -10,7 +11,7 @@ def get_json_data(row, file_number):
     try:
         dt = datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")
         data["timestamp"] = dt.isoformat() + "Z"
-    except Exception as e:
+    except Exception:
         data["timestamp"] = row[0]
 
     try:
@@ -25,21 +26,33 @@ def get_json_data(row, file_number):
 def process_file(file, file_number, producer):
     with open(file, 'r') as f:
         reader = csv.reader(f)
-        header = next(reader, None)
+        next(reader, None)
         for row in reader:
             json_data = get_json_data(row, file_number)
             if json_data:
-                producer.send('SensorData', bytes(f'{json_data}', 'UTF-8'))
-                print(f"Sensor data is sent: {json_data}")
+                producer.send('SensorData', json_data.encode('utf-8'))
+                # print(f"Sensor data is sent: {json_data}")
                 time.sleep(0.1)
 
+def create_producer():
+    kafka_broker = os.getenv('KAFKA_BROKER', 'kafka:9092')
+    while True:
+        try:
+            producer = KafkaProducer(bootstrap_servers=[kafka_broker])
+            return producer
+        except Exception as e:
+            print(f"Error connecting to Kafka: {e}, retrying in 5 seconds...")
+            time.sleep(5)
+
 def main():
-    producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+    data_dir = os.getenv("DATA_DIR", "./data")
+
+    producer = create_producer()
     threads = []
 
-    for file_number in range(1, 6):  
-        file = f"Data/sub_{file_number}.csv"
-        thread = threading.Thread(target=process_file, args=(file, file_number, producer))
+    for file_number in range(1, 6):
+        file_path = os.path.join(data_dir, f"sub_{file_number}.csv")
+        thread = threading.Thread(target=process_file, args=(file_path, file_number, producer))
         threads.append(thread)
         thread.start()
 
