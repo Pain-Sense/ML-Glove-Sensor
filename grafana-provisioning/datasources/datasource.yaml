@@ -30,4 +30,4 @@ datasources:
       tlsAuth: false
       tlsAuthWithCert: false
     secureJsonData:
-      password: admin
+      password: admin123
