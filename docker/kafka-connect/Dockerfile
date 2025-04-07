@@ -11,9 +11,6 @@ RUN     mkdir -p /opt/kafka-connect/connectors \
     &&  rm -f /tmp/kafka-connect-mqtt-8.1.31.zip \
     &&  rm -rf /tmp/kafka-connect-mqtt-8.1.31
 
-COPY connect-standalone.properties /opt/kafka-connect/config/connect-standalone.properties
-COPY mqtt-source.config /opt/kafka-connect/config/mqtt-source.config
-
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
