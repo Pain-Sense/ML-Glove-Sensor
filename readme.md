@@ -1,4 +1,4 @@
-## 📦 Requirements
+## Requirements
 
 - Docker & Docker Compose  
 - Java 17+ (for Quarkus)  
@@ -7,11 +7,11 @@
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 All major components are orchestrated using `docker-compose`. Use `make` to manage the workflow easily.
 
-### 🛠 Run the Full Stack
+### Run the Full Stack
 
 ```bash
 make up                # Start the full stack (Kafka, Spark, Influx, etc.)
