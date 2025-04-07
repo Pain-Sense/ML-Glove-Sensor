@@ -2,12 +2,12 @@ services:
   kafka:
     container_name: kafka
     build:
-      context: ./docker/kafka-connect
+      context: ./docker/kafka
       dockerfile: Dockerfile
     # image: apache/kafka:4.0.0
     volumes:
-      - ./docker/kafka-connect/connect-standalone.properties:/opt/kafka-connect/config/connect-standalone.properties:z,ro
-      - ./docker/kafka-connect/mqtt-source.config:/opt/kafka-connect/config/mqtt-source.config:z,ro
+      - ./docker/kafka/connect-standalone.properties:/opt/kafka-connect/config/connect-standalone.properties:z,ro
+      - ./docker/kafka/mqtt-source.config:/opt/kafka-connect/config/mqtt-source.config:z,ro
     ports:
     - "9092:9092"
     environment:
