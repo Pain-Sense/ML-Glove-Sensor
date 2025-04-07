@@ -37,31 +37,88 @@ services:
       #- 8885:8885  # encrypted, authenticated
 
   influxdb:
-      container_name: influxdb
-      ports:
-          - '8086:8086'
-      image: 'docker.io/influxdb:2.2.0'
+    container_name: influxdb
+    ports:
+      - '8086:8086'
+    image: 'docker.io/influxdb:2.2.0'
+    volumes:
+      - influxdb-data:/var/lib/influxdb
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin123
+      - DOCKER_INFLUXDB_INIT_ORG=UA
+      - DOCKER_INFLUXDB_INIT_BUCKET=bucket1
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=abc
 
   mysql:
-      container_name: mysql
-      ports:
-          - '3306:3306'
-      image: 'docker.io/mysql:8.0'
-      volumes:
-          - mysql-data:/var/lib/mysql
-      environment:
-          MYSQL_DATABASE: sql_data
-          MYSQL_USER: admin
-          MYSQL_PASSWORD: admin123
-          MYSQL_ROOT_PASSWORD: admin123
+    container_name: mysql
+    ports:
+        - '3306:3306'
+    image: 'docker.io/mysql:8.0'
+    volumes:
+      - ./mysql-init:/docker-entrypoint-initdb.d
+      - mysql-data:/var/lib/mysql
+    environment:
+        MYSQL_DATABASE: sql_data
+        MYSQL_USER: admin
+        MYSQL_PASSWORD: admin123
+        MYSQL_ROOT_PASSWORD: admin123
 
   grafana:
     image: grafana/grafana-oss:8.4.3
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana-provisioning/:/etc/grafana/provisioning
     depends_on:
       - influxdb
       - mysql
     ports:
       - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - DOCKER_INFLUXDB_INIT_ORG=UA
+      - DOCKER_INFLUXDB_INIT_BUCKET=bucket1
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=abc
+
+
+  
+  spark-master:
+    image: bde2020/spark-master:latest
+    container_name: spark-master
+    hostname: spark-master
+    environment:
+      - SPARK_MODE=master
+    ports:
+      - "8080:8080"   # Spark UI
+      - "7077:7077"   # Spark Master Port
+
+  spark-worker:
+    image: bde2020/spark-worker:latest
+    container_name: spark-worker
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    ports:
+      - "8081:8081"
+
+  jupyter:
+    image: jupyter/pyspark-notebook
+    container_name: jupyter
+    depends_on:
+      - spark-master
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+
 
 volumes:
   mysql-data:
+  influxdb-data:
+  grafana-data:
