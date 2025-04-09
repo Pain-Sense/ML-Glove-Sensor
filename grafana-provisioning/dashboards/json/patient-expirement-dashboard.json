@@ -22,7 +22,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1744032650798,
+  "iteration": 1744066168604,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -37,7 +37,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -122,7 +123,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -165,7 +167,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": false,
+  "refresh": "5s",
   "schemaVersion": 35,
   "style": "dark",
   "tags": [],
@@ -222,8 +224,8 @@
       {
         "current": {
           "selected": false,
-          "text": "Stress Test",
-          "value": "Stress Test"
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": {
           "type": "mysql",
@@ -246,13 +248,13 @@
     ]
   },
   "time": {
-    "from": "2025-04-07T12:45:28.649Z",
-    "to": "2025-04-07T13:15:49.046Z"
+    "from": "now-5m",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "New dashboard2",
   "uid": "sW4Yqd0Hz",
-  "version": 2,
+  "version": 8,
   "weekStart": ""
 }
