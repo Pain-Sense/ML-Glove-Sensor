@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
@@ -20,11 +18,11 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
-
-  iot-simulator:
-    build: ./iot-simulator
-    depends_on:
-      - kafka
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/9092"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -36,12 +34,30 @@ services:
     depends_on:
       - kafka
 
+  influxdb:
+    image: influxdb:2.7
+    ports:
+      - "${INFLUXDB_PORT}:${INFLUXDB_PORT}"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_TOKEN}
+
   telegraf:
     image: telegraf:latest
-    container_name: telegraf
     volumes:
       - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     env_file:
       - .env
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  iot-simulator:
+    build: ./iot-simulator
+    command: [ "sleep", "infinity" ]
     depends_on:
       - kafka
