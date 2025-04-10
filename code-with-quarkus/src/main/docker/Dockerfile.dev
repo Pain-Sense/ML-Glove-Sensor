@@ -1,0 +1,16 @@
+FROM maven:3.9-eclipse-temurin-17 AS build
+
+# Create app directory
+WORKDIR /app
+
+# Copy just the Maven wrapper and pom.xml first (for faster rebuilds)
+COPY .mvn .mvn
+COPY mvnw pom.xml ./
+
+# Install dependencies
+RUN ./mvnw dependency:go-offline
+
+# Copy the rest of the project
+COPY . .
+
+CMD ["./mvnw", "quarkus:dev"]
