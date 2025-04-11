@@ -25,9 +25,9 @@ datasources:
     access: proxy
     url: mysql:3306
     database: sql_data
-    user: admin
+    user: root
     jsonData:
       tlsAuth: false
       tlsAuthWithCert: false
     secureJsonData:
-      password: admin123
+      password: root

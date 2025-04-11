@@ -21,11 +21,11 @@ def send_csv_data(file_path):
         data["file_number"] = os.path.basename(file_path).split("_")[1].split(".")[0]
         producer.send('SensorData', data)
         print(f"Sent: {data}")
-        time.sleep(0.5)  # 0.5s delay to simulate real device timing
+        time.sleep(0.2)  # 0.2s delay to simulate real device timing
 
 if __name__ == "__main__":
     data_folder = '/app/data'  # Path inside container
-    csv_files = glob.glob(os.path.join(data_folder, "sub_*.csv"))
+    csv_files = sorted(glob.glob(os.path.join(data_folder, "sub_*.csv")))
 
     if not csv_files:
         print("No CSV files found in /data")
