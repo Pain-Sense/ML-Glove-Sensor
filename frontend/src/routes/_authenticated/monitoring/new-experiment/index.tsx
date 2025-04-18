@@ -1,11 +1,8 @@
+import MonitoringNewExperiment from '@/features/monitoring/new-experiment'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute(
   '/_authenticated/monitoring/new-experiment/'
 )({
-  component: RouteComponent,
+  component: MonitoringNewExperiment,
 })
-
-function RouteComponent() {
-  return <div>Hello "/_authenticated/monitoring/new-experiment/"!</div>
-}
