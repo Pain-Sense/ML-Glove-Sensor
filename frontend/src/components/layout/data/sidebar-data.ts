@@ -17,7 +17,7 @@ export const sidebarData: SidebarData = {
           icon: IconLayoutDashboard,
         },
         {
-          title: 'New Monitoring Session',
+          title: 'New Monitoring Experiment',
           url: '/monitoring/new-experiment',
           icon: IconHeart,
         },
