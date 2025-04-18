@@ -23,6 +23,7 @@ import { Route as authSignIn2Import } from './routes/(auth)/sign-in-2'
 import { Route as authSignInImport } from './routes/(auth)/sign-in'
 import { Route as authOtpImport } from './routes/(auth)/otp'
 import { Route as authForgotPasswordImport } from './routes/(auth)/forgot-password'
+import { Route as AuthenticatedMonitoringNewExperimentIndexImport } from './routes/_authenticated/monitoring/new-experiment/index'
 
 // Create/Update Routes
 
@@ -96,6 +97,13 @@ const authForgotPasswordRoute = authForgotPasswordImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRoute,
 } as any)
+
+const AuthenticatedMonitoringNewExperimentIndexRoute =
+  AuthenticatedMonitoringNewExperimentIndexImport.update({
+    id: '/monitoring/new-experiment/',
+    path: '/monitoring/new-experiment/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -185,6 +193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/monitoring/new-experiment/': {
+      id: '/_authenticated/monitoring/new-experiment/'
+      path: '/monitoring/new-experiment'
+      fullPath: '/monitoring/new-experiment'
+      preLoaderRoute: typeof AuthenticatedMonitoringNewExperimentIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
   }
 }
 
@@ -192,10 +207,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedMonitoringNewExperimentIndexRoute: typeof AuthenticatedMonitoringNewExperimentIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedMonitoringNewExperimentIndexRoute:
+    AuthenticatedMonitoringNewExperimentIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -214,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/': typeof AuthenticatedIndexRoute
+  '/monitoring/new-experiment': typeof AuthenticatedMonitoringNewExperimentIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -228,6 +247,7 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/': typeof AuthenticatedIndexRoute
+  '/monitoring/new-experiment': typeof AuthenticatedMonitoringNewExperimentIndexRoute
 }
 
 export interface FileRoutesById {
@@ -244,6 +264,7 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/monitoring/new-experiment/': typeof AuthenticatedMonitoringNewExperimentIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -261,6 +282,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/'
+    | '/monitoring/new-experiment'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/forgot-password'
@@ -274,6 +296,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/'
+    | '/monitoring/new-experiment'
   id:
     | '__root__'
     | '/_authenticated'
@@ -288,6 +311,7 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/'
+    | '/_authenticated/monitoring/new-experiment/'
   fileRoutesById: FileRoutesById
 }
 
@@ -345,7 +369,8 @@ export const routeTree = rootRoute
     "/_authenticated": {
       "filePath": "_authenticated/route.tsx",
       "children": [
-        "/_authenticated/"
+        "/_authenticated/",
+        "/_authenticated/monitoring/new-experiment/"
       ]
     },
     "/(auth)/forgot-password": {
@@ -380,6 +405,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/": {
       "filePath": "_authenticated/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/monitoring/new-experiment/": {
+      "filePath": "_authenticated/monitoring/new-experiment/index.tsx",
       "parent": "/_authenticated"
     }
   }
