@@ -1,11 +1,18 @@
 Comandos para dar boot. (to be changed)
-./mvnw quarkus:dev
 
 docker compose up
 
 telegraf --config telegraf.conf 
 
+./mvnw quarkus:dev
+
 python3 SensorDataProducer.py 
+
+#Grafana:
+#http://localhost:3000/
+
+#username:admin
+#password:admin
 
 #raw data
 docker exec -it kafka bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic SensorData  --from-beginning
