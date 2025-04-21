@@ -24,6 +24,7 @@ import { Route as authSignInImport } from './routes/(auth)/sign-in'
 import { Route as authOtpImport } from './routes/(auth)/otp'
 import { Route as authForgotPasswordImport } from './routes/(auth)/forgot-password'
 import { Route as AuthenticatedMonitoringNewExperimentIndexImport } from './routes/_authenticated/monitoring/new-experiment/index'
+import { Route as AuthenticatedMonitoringLiveExperimentIdImport } from './routes/_authenticated/monitoring/live/$experimentId'
 
 // Create/Update Routes
 
@@ -102,6 +103,13 @@ const AuthenticatedMonitoringNewExperimentIndexRoute =
   AuthenticatedMonitoringNewExperimentIndexImport.update({
     id: '/monitoring/new-experiment/',
     path: '/monitoring/new-experiment/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedMonitoringLiveExperimentIdRoute =
+  AuthenticatedMonitoringLiveExperimentIdImport.update({
+    id: '/monitoring/live/$experimentId',
+    path: '/monitoring/live/$experimentId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -193,6 +201,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/monitoring/live/$experimentId': {
+      id: '/_authenticated/monitoring/live/$experimentId'
+      path: '/monitoring/live/$experimentId'
+      fullPath: '/monitoring/live/$experimentId'
+      preLoaderRoute: typeof AuthenticatedMonitoringLiveExperimentIdImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/monitoring/new-experiment/': {
       id: '/_authenticated/monitoring/new-experiment/'
       path: '/monitoring/new-experiment'
@@ -207,11 +222,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedMonitoringLiveExperimentIdRoute: typeof AuthenticatedMonitoringLiveExperimentIdRoute
   AuthenticatedMonitoringNewExperimentIndexRoute: typeof AuthenticatedMonitoringNewExperimentIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedMonitoringLiveExperimentIdRoute:
+    AuthenticatedMonitoringLiveExperimentIdRoute,
   AuthenticatedMonitoringNewExperimentIndexRoute:
     AuthenticatedMonitoringNewExperimentIndexRoute,
 }
@@ -232,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/': typeof AuthenticatedIndexRoute
+  '/monitoring/live/$experimentId': typeof AuthenticatedMonitoringLiveExperimentIdRoute
   '/monitoring/new-experiment': typeof AuthenticatedMonitoringNewExperimentIndexRoute
 }
 
@@ -247,6 +266,7 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/': typeof AuthenticatedIndexRoute
+  '/monitoring/live/$experimentId': typeof AuthenticatedMonitoringLiveExperimentIdRoute
   '/monitoring/new-experiment': typeof AuthenticatedMonitoringNewExperimentIndexRoute
 }
 
@@ -264,6 +284,7 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/monitoring/live/$experimentId': typeof AuthenticatedMonitoringLiveExperimentIdRoute
   '/_authenticated/monitoring/new-experiment/': typeof AuthenticatedMonitoringNewExperimentIndexRoute
 }
 
@@ -282,6 +303,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/'
+    | '/monitoring/live/$experimentId'
     | '/monitoring/new-experiment'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -296,6 +318,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/'
+    | '/monitoring/live/$experimentId'
     | '/monitoring/new-experiment'
   id:
     | '__root__'
@@ -311,6 +334,7 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/'
+    | '/_authenticated/monitoring/live/$experimentId'
     | '/_authenticated/monitoring/new-experiment/'
   fileRoutesById: FileRoutesById
 }
@@ -370,6 +394,7 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/route.tsx",
       "children": [
         "/_authenticated/",
+        "/_authenticated/monitoring/live/$experimentId",
         "/_authenticated/monitoring/new-experiment/"
       ]
     },
@@ -405,6 +430,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/": {
       "filePath": "_authenticated/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/monitoring/live/$experimentId": {
+      "filePath": "_authenticated/monitoring/live/$experimentId.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/monitoring/new-experiment/": {
