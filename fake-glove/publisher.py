@@ -5,7 +5,7 @@ import json
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    '-a', '--addr', type=str, default="test.mosquitto.org",
+    '-a', '--addr', type=str, default="localhost",
     help="Endereço do broker MQTT."
 )
 parser.add_argument(
