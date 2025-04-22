@@ -13,7 +13,7 @@ parser.add_argument(
     help="Porto do broker MQTT."
 )
 parser.add_argument(
-    '-i', '--subject', type=int, default=1, choices=range(1, 3),
+    '-i', '--subject', type=int, default=1, choices=range(1, 6),
     help='Número do participante.'
 )
 
@@ -23,10 +23,10 @@ mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 mqttc.connect(args.addr, args.port)
 mqttc.loop_start()
 
-file_raw_phys = open(
-    f'CASE_snippet_360s/data/raw/physiological/sub{args.subject}_DAQ.txt'
+f = open(
+    f'../Data/sub_{args.subject}.csv'
 )
-reader = csv.reader(file_raw_phys, csv.excel_tab)
+reader = csv.reader(f)
 
 for row in reader:
     content = {
@@ -42,4 +42,4 @@ for row in reader:
     }
 
     stringified = json.dumps(content)
-    mqttc.publish("case/raw/phys", stringified)
+    mqttc.publish("SensorData", stringified)
