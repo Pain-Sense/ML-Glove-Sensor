@@ -42,7 +42,7 @@ services:
       - '8086:8086'
     image: 'docker.io/influxdb:2.2.0'
     volumes:
-      - influxdb-data:/var/lib/influxdb
+      - influxdb-data:/var/lib/influxdb:z
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=admin
@@ -57,7 +57,7 @@ services:
         - '3306:3306'
     image: 'docker.io/mysql:8.0'
     volumes:
-      - ./mysql-init:/docker-entrypoint-initdb.d
+      - ./mysql-init:/docker-entrypoint-initdb.d:z
       - mysql-data:/var/lib/mysql
     environment:
         MYSQL_DATABASE: sql_data
@@ -68,8 +68,8 @@ services:
   grafana:
     image: grafana/grafana-oss:8.4.3
     volumes:
-      - grafana-data:/var/lib/grafana
-      - ./grafana-provisioning/:/etc/grafana/provisioning
+      - grafana-data:/var/lib/grafana:z
+      - ./grafana-provisioning/:/etc/grafana/provisioning:z
     depends_on:
       - influxdb
       - mysql
@@ -113,7 +113,7 @@ services:
     ports:
       - "8888:8888"
     volumes:
-      - ./notebooks:/home/jovyan/work
+      - ./notebooks:/home/jovyan/work:z
     environment:
       - SPARK_MASTER=spark://spark-master:7077
 
