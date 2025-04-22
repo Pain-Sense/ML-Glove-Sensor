@@ -42,4 +42,4 @@ for row in reader:
     }
 
     stringified = json.dumps(content)
-    mqttc.publish("SensorData", stringified)
+    mqttc.publish("sensors", stringified)
