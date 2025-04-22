@@ -19,6 +19,6 @@ def on_message(client, userdata, message: subscribe.paho.MQTTMessage):
 
 subscribe.callback(
     on_message,
-    "case/raw/phys",
+    "SensorData",
     hostname=args.addr, port=args.port
 )
