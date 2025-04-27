@@ -2,10 +2,6 @@ Comandos para dar boot. (to be changed)
 
 docker compose up
 
-telegraf --config telegraf.conf 
-
-./mvnw quarkus:dev
-
 python3 SensorDataProducer.py 
 
 #Grafana:
