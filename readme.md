@@ -6,7 +6,11 @@ then
 
 docker compose up --build
 
-python3 SensorDataProducer.py 
+# Open a shell inside the container to be able to run the producer script
+docker exec -it ml-glove-sensor-python-kafka-producer-1 bash
+
+# Inside the container, run the producer manually:
+python producer.py
 
 #Grafana:
 #http://localhost:3000/

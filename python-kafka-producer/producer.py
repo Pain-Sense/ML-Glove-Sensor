@@ -34,7 +34,7 @@ def process_file(file, file_number, producer):
                 time.sleep(0.1)
 
 def main():
-    producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+    producer = KafkaProducer(bootstrap_servers=['kafka:9092'])
     threads = []
 
     for file_number in range(1, 6):  

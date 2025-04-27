@@ -138,6 +138,15 @@ services:
       - kafka
     restart: unless-stopped
 
+  python-kafka-producer:
+    build:
+      context: ./python-kafka-producer
+      dockerfile: Dockerfile
+    depends_on:
+      - kafka
+    entrypoint: [ "sleep", "infinity" ]
+    restart: unless-stopped
+
 
 volumes:
   mysql-data:
