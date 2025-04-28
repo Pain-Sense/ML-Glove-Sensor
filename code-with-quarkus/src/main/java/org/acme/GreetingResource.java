@@ -27,11 +27,19 @@ public class GreetingResource {
     }
 
     @GET
-    @Path("roles-allowed")
+    @Path("researcher-path")
     @RolesAllowed({"Researcher", "Healthcare Professional"})
     @Produces(MediaType.TEXT_PLAIN)
-    public String helloRolesAllowed(@Context SecurityContext ctx) {
-        return getResponseString(ctx) + ", birthdate: " + jwt.getClaim("birthdate").toString();
+    public String helloResearcher(@Context SecurityContext ctx) {
+        return getResponseString(ctx) + ", Security level: Researcher";
+    }
+
+    @GET
+    @Path("healthcare-path")
+    @RolesAllowed({"Healthcare Professional"})
+    @Produces(MediaType.TEXT_PLAIN)
+    public String helloHealthcareProfessional(@Context SecurityContext ctx) {
+        return getResponseString(ctx) + ", Security level: Healthcare Professional";
     }
 
     private String getResponseString(SecurityContext ctx){
