@@ -6,7 +6,12 @@ telegraf --config telegraf.conf
 
 ./mvnw quarkus:dev
 
-python3 SensorDataProducer.py 
+```bash
+cd fake-glove
+python -m venv venv
+pip install -r requirements.txt
+python MqttProducer.py
+```
 
 #Grafana:
 #http://localhost:3000/
