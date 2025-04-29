@@ -129,7 +129,7 @@ services:
     container_name: quarkus-app
     build:
       context: ./code-with-quarkus
-      dockerfile: src/main/docker/Dockerfile.jvm
+      dockerfile: Dockerfile.jvm.package
     ports:
       - "8089:8089"
     environment:
