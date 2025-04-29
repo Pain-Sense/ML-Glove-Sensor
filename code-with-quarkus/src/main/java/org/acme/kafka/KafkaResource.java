@@ -31,7 +31,7 @@ public class KafkaResource {
     public Response getStatus() {
         Map<String, String> status = new HashMap<>();
         status.put("status", "Kafka Producer running");
-        status.put("broker", "localhost:9092");
+        status.put("broker", "kafka:9092");
         return Response.ok(status).build();
     }
 
