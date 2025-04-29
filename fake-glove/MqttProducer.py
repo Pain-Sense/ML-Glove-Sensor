@@ -19,7 +19,7 @@ def get_json_data(row, file_number):
     except ValueError:
         return None
 
-    data["file_number"] = file_number
+    data["id"] = file_number
     return json.dumps(data)
 
 def process_file(file, file_number, mqttc):

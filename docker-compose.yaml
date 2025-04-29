@@ -146,13 +146,12 @@ services:
       - kafka
     restart: unless-stopped
 
-  python-kafka-producer:
+  fake-glove-mqtt-producer:
     build:
-      context: ./python-kafka-producer
-      dockerfile: Dockerfile
+      context: ./fake-glove
+      dockerfile: Dockerfile.mqtt
     depends_on:
-      - kafka
-    entrypoint: [ "sleep", "infinity" ]
+      - mosquitto
     restart: unless-stopped
 
 

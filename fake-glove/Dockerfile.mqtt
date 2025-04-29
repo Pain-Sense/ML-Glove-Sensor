@@ -1,5 +1,5 @@
 # Use a lightweight Python image
-FROM python:3.11-slim
+FROM python:3.13-slim
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -10,7 +10,11 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
-COPY . .
+COPY MqttProducer.py .
+
+# Copy the dataset.
+COPY ./Data Data
 
 # Default command to run your producer script
-CMD ["python", "producer.py"]
+ENTRYPOINT ["python", "MqttProducer.py"]
+CMD ["-a", "mosquitto"]
