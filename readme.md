@@ -1,29 +1,22 @@
 Comandos para dar boot. (to be changed)
 
-docker compose up
+go to the code-with quarkus directory and run:
 
-telegraf --config telegraf.conf 
+./mvnw package
 
-./mvnw quarkus:dev
+then go back to the root and run:
 
-```bash
-cd fake-glove
-python -m venv venv
-pip install -r requirements.txt
-python MqttProducer.py
-```
+# This will run all the services as docker containers
+docker compose up --build
 
-#Grafana:
-#http://localhost:3000/
+# Open a shell inside the container to be able to run the producer script
+docker exec -it ml-glove-sensor-python-kafka-producer-1 bash
 
-#username:admin
-#password:admin
+# Inside the container, run the producer manually:
+python producer.py
 
-#raw data
-docker exec -it kafka bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic SensorData  --from-beginning
+# Grafana is available on: (username: admin and password: admin)
+http://localhost:3000/
 
-#processed data
-docker exec -it kafka bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic ProcessedSensorData  --from-beginning
-
-#for testing purposes
+# for testing purposes you can call this endpoint to let quarkus service process some data from kafka
 curl -X POST http://localhost:8089/kafka/send

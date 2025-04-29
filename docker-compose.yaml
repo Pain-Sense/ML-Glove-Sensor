@@ -9,14 +9,14 @@ services:
       - ./docker/kafka/connect-standalone.properties:/opt/kafka-connect/config/connect-standalone.properties:z,ro
       - ./docker/kafka/mqtt-source.config:/opt/kafka-connect/config/mqtt-source.config:z,ro
     ports:
-    - "9092:9092"
+      - "9092:9092"
     environment:
       LOG_DIR: "/tmp/logs"
       environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://localhost:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
@@ -54,16 +54,16 @@ services:
   mysql:
     container_name: mysql
     ports:
-        - '3306:3306'
+      - '3306:3306'
     image: 'docker.io/mysql:8.0'
     volumes:
       - ./mysql-init:/docker-entrypoint-initdb.d:z
       - mysql-data:/var/lib/mysql
     environment:
-        MYSQL_DATABASE: sql_data
-        MYSQL_USER: admin
-        MYSQL_PASSWORD: admin123
-        MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: sql_data
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+      MYSQL_ROOT_PASSWORD: admin123
 
   grafana:
     image: grafana/grafana-oss:8.4.3
@@ -74,15 +74,13 @@ services:
       - influxdb
       - mysql
     ports:
-      - 3000:3000
+      - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - DOCKER_INFLUXDB_INIT_ORG=UA
       - DOCKER_INFLUXDB_INIT_BUCKET=bucket1
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=abc
-
-
 
   spark-master:
     image: bde2020/spark-master:latest
@@ -91,8 +89,8 @@ services:
     environment:
       - SPARK_MODE=master
     ports:
-      - "8080:8080"   # Spark UI
-      - "7077:7077"   # Spark Master Port
+      - "8080:8080"
+      - "7077:7077"
 
   spark-worker:
     image: bde2020/spark-worker:latest
@@ -116,6 +114,46 @@ services:
       - ./notebooks:/home/jovyan/work:z
     environment:
       - SPARK_MASTER=spark://spark-master:7077
+
+  telegraf:
+    image: telegraf:1.30
+    container_name: telegraf
+    depends_on:
+      - kafka
+      - influxdb
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    environment:
+      - HOST_PROC=/rootfs/proc
+      - HOST_SYS=/rootfs/sys
+      - HOST_ETC=/rootfs/etc
+    ports:
+      - "8125:8125/udp"
+      - "8092:8092/udp"
+      - "8094:8094"
+    restart: unless-stopped
+
+  quarkus-app:
+    container_name: quarkus-app
+    build:
+      context: ./code-with-quarkus
+      dockerfile: src/main/docker/Dockerfile.jvm
+    ports:
+      - "8089:8089"
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+    restart: unless-stopped
+
+  python-kafka-producer:
+    build:
+      context: ./python-kafka-producer
+      dockerfile: Dockerfile
+    depends_on:
+      - kafka
+    entrypoint: [ "sleep", "infinity" ]
+    restart: unless-stopped
 
 
 volumes:
