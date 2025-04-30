@@ -4,12 +4,11 @@ services:
     build:
       context: ./kafka
       dockerfile: Dockerfile
-    # image: apache/kafka:4.0.0
     volumes:
       - ./kafka/connect-standalone.properties:/opt/kafka-connect/config/connect-standalone.properties:z,ro
       - ./kafka/mqtt-source.config:/opt/kafka-connect/config/mqtt-source.config:z,ro
     ports:
-    - "9092:9092"
+      - "9092:9092"
     environment:
       LOG_DIR: "/tmp/logs"
       environment:
@@ -29,12 +28,10 @@ services:
   mosquitto:
     container_name: mosquitto
     image: eclipse-mosquitto
-    volumes:    # Mount configuration file into container's volume.
+    volumes:
       - ./mosquitto/mosquitto-no-auth.conf:/mosquitto/config/mosquitto.conf:z,ro
     ports:
-      - 1883:1883 # Unencrypted, unauthenticated
-      #- 1884:1884  # unencrypted, authenticated
-      #- 8885:8885  # encrypted, authenticated
+      - 1883:1883
 
   influxdb:
     container_name: influxdb
