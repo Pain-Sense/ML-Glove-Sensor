@@ -30,7 +30,7 @@ services:
     container_name: mosquitto
     image: eclipse-mosquitto
     volumes:    # Mount configuration file into container's volume.
-      - ./docker/mosquitto/mosquitto-no-auth.conf:/mosquitto/config/mosquitto.conf:z,ro
+      - ./mosquitto/mosquitto-no-auth.conf:/mosquitto/config/mosquitto.conf:z,ro
     ports:
       - 1883:1883 # Unencrypted, unauthenticated
       #- 1884:1884  # unencrypted, authenticated
