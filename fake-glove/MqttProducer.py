@@ -4,8 +4,9 @@ import csv
 import json
 import threading
 import time
+from math import floor
 
-def get_json_data(row, file_number):
+def get_dict_from_data(row, file_number):
     data = {}
     try:
         dt = datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")
@@ -20,17 +21,21 @@ def get_json_data(row, file_number):
         return None
 
     data["id"] = file_number
-    return json.dumps(data)
+    return data
 
 def process_file(file, file_number, mqttc):
     with open(file, 'r') as f:
         reader = csv.reader(f)
         header = next(reader, None)
+        print("Starting to send data.")
+
         for row in reader:
-            json_data = get_json_data(row, file_number)
-            if json_data:
-                mqttc.publish("sensors", json_data)
-                print(f"Sensor data is sent: {json_data}")
+            data = get_dict_from_data(row, file_number)
+            if data:
+                mqttc.publish("sensors", json.dumps(data))
+                ts = floor(float(data["timestamp"]))
+                if (ts > 0) and (ts % 1000 == 0):
+                    print(f"Sent 1000 rows of sensor data. The latest was: {data}")
                 time.sleep(0.1)
 
 def main():
@@ -60,6 +65,8 @@ def main():
 
     for thread in threads:
         thread.join()
+
+    print("All data has been sent.")
 
 if __name__ == "__main__":
     main()
