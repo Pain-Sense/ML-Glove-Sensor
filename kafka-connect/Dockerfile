@@ -14,7 +14,7 @@ RUN     mkdir -p /opt/kafka-connect/connectors \
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-ENTRYPOINT ["/start.sh"]
+#ENTRYPOINT ["/start.sh"]
 
-# ENTRYPOINT ["/opt/kafka/bin/connect-standalone.sh"]
-# CMD ["/opt/kafka-connect/config/connect-standalone.properties", "/opt/kafka-connect/config/mqtt-source.config"]
+ENTRYPOINT ["/opt/kafka/bin/connect-standalone.sh"]
+CMD ["/opt/kafka-connect/config/connect-standalone.properties", "/opt/kafka-connect/config/mqtt-source.config"]
