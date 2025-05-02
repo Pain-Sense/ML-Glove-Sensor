@@ -26,7 +26,7 @@ services:
       context: ./kafka-connect
       dockerfile: Dockerfile
     depends_on:
-      kafka
+      - kafka
     volumes:
       - ./kafka-connect/connect-standalone.properties:/opt/kafka-connect/config/connect-standalone.properties:z,ro
       - ./kafka-connect/mqtt-source.config:/opt/kafka-connect/config/mqtt-source.config:z,ro
