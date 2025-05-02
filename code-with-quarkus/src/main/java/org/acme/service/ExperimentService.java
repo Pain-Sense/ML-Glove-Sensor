@@ -1,0 +1,50 @@
+package org.acme.service;
+
+import org.acme.dto.ExperimentDTO;
+import org.acme.entity.Device;
+import org.acme.entity.Experiment;
+import org.acme.entity.Patient;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+
+import java.util.List;
+
+@ApplicationScoped
+public class ExperimentService {
+
+    @Inject
+    EntityManager em;
+
+    public List<Experiment> listAll() {
+        return em.createQuery("FROM Experiment", Experiment.class).getResultList();
+    }
+
+    public Experiment findById(String id) {
+        return em.find(Experiment.class, id);
+    }
+
+    @Transactional
+    public Experiment create(ExperimentDTO dto) {
+        Patient patient = em.find(Patient.class, dto.patientId);
+        if (patient == null) {
+            throw new IllegalArgumentException("Patient not found");
+        }
+
+        Device device = em.find(Device.class, dto.deviceId);
+        if (device == null) {
+            throw new IllegalArgumentException("Device not found");
+        }
+
+        Experiment experiment = new Experiment();
+        experiment.id = dto.id;
+        experiment.name = dto.name;
+        experiment.notes = dto.notes;
+        experiment.patient = patient;
+        experiment.device = device;
+
+        em.persist(experiment);
+        return experiment;
+    }
+}
