@@ -1,4 +1,4 @@
-FROM apache/kafka:latest
+FROM apache/kafka:4.0.0
 
 ARG REACTOR_VERSION="8.1.31"
 
