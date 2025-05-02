@@ -1,5 +1,6 @@
 package org.acme.entity;
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 public class Patient {
