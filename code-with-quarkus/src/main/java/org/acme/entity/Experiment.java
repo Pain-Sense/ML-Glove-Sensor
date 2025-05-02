@@ -1,0 +1,20 @@
+package org.acme.entity;
+import jakarta.persistence.*;
+
+@Entity
+public class Experiment {
+
+    @Id
+    public String id;
+
+    public String name;
+    public String notes;
+
+    @ManyToOne
+    @JoinColumn(name = "patient_id", nullable = false)
+    public Patient patient;
+
+    @ManyToOne
+    @JoinColumn(name = "device_id")
+    public Device device;
+}
