@@ -1,11 +1,5 @@
 Comandos para dar boot. (to be changed)
 
-go to the code-with quarkus directory and run:
-
-./mvnw package
-
-then go back to the root and run:
-
 # This will run all the services as docker containers
 docker compose up --build
 
