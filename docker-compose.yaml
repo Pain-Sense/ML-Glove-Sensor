@@ -150,10 +150,10 @@ services:
       - kafka
     restart: unless-stopped
 
-  python-mqtt-producer:
+  fake-glove-producer:
     build:
       context: ./fake-glove
-      dockerfile: Dockerfile.mqtt
+      dockerfile: Dockerfile
     depends_on:
       - mosquitto
     restart: unless-stopped

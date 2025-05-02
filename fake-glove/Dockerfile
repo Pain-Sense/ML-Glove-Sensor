@@ -10,7 +10,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
-COPY MqttProducer.py .
+COPY *.py .
 
 # Copy the dataset.
 COPY ./Data Data
