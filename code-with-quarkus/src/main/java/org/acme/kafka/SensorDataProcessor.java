@@ -25,10 +25,17 @@ public class SensorDataProcessor {
     @Incoming("SensorData")
     public void process(String message) {
         try {
+
             JsonNode jsonNode = objectMapper.readTree(message);
+           // System.out.println(jsonNode);
+   
+
             double bvp = jsonNode.get("bvp").asDouble();
             double gsr = jsonNode.get("gsr").asDouble();
-            int fileNumber = jsonNode.get("id").asInt();
+
+
+            JsonNode tempNode = jsonNode.get("id");
+            Double id = tempNode != null ? tempNode.asDouble() : 0; 
 
             // Generate a random ECG value
             double ecg = (0.5 + random.nextDouble()) * (bvp + gsr);
