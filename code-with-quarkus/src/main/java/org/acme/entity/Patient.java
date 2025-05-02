@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name = "patients")
 public class Patient {
 
     @Id
@@ -11,7 +12,7 @@ public class Patient {
     public String name;
     public String age;
     public String gender;
-    public String condition;
+    public String health_condition;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<org.acme.entity.Experiment> experiments;

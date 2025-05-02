@@ -5,5 +5,5 @@ public class PatientDTO {
     public String name;
     public String age;
     public String gender;
-    public String condition;
+    public String health_condition;
 }

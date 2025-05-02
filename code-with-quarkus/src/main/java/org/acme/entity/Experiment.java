@@ -2,6 +2,7 @@ package org.acme.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "experiments")
 public class Experiment {
 
     @Id

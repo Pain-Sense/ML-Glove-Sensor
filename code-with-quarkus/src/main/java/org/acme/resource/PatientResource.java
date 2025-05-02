@@ -47,7 +47,7 @@ public class PatientResource {
         patient.name = dto.name;
         patient.age = dto.age;
         patient.gender = dto.gender;
-        patient.condition = dto.condition;
+        patient.health_condition = dto.health_condition;
 
         em.merge(patient);
         return Response.ok(toDTO(patient)).build();
@@ -59,7 +59,7 @@ public class PatientResource {
         dto.name = p.name;
         dto.age = p.age;
         dto.gender = p.gender;
-        dto.condition = p.condition;
+        dto.health_condition = p.health_condition;
         return dto;
     }
 }

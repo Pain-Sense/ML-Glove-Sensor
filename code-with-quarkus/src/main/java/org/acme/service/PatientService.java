@@ -33,7 +33,7 @@ public class PatientService {
         patient.name = dto.name;
         patient.age = dto.age;
         patient.gender = dto.gender;
-        patient.condition = dto.condition;
+        patient.health_condition = dto.health_condition;
         return em.merge(patient);
     }
 }
