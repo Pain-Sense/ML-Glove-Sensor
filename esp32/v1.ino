@@ -109,11 +109,14 @@ void loop () {
   }
   client.loop();
 
-  String payload = String("{\"timestamp\":\"") +
-                   String(now.timestamp()) + "\",\"gsr\":" +
-                   gsrValue + ",\"ppg\":" +
-                   ppgValue + ",\"id\":" +
+
+
+                     String payload = String("{\"timestamp\":\"") +
+                   String(now.timestamp()) + "\",\"bvp\":" +
+                   ppgValue + ",\"gsr\":" +
+                   gsrValue + ",\"id\":" +
                    10 + "}";
+
 
   client.publish("sensors", payload.c_str());
   Serial.println("Published to MQTT: " + payload);
