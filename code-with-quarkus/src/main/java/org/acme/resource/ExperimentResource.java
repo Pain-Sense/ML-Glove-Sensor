@@ -67,6 +67,23 @@ public class ExperimentResource {
         return Response.status(Response.Status.CREATED).entity(toDTO(experiment)).build();
     }
 
+    @POST
+    @Path("/{id}/stop")
+    @Transactional
+    public Response stopExperiment(@PathParam("id") String id) {
+        Experiment experiment = em.find(Experiment.class, id);
+        
+        if (experiment == null) return Response.status(404).build();
+
+        Device device = experiment.device;
+        if (device != null) {
+            device.status = "available";
+            em.merge(device);
+        }
+
+        return Response.ok().build();
+    }
+
     private ExperimentDTO toDTO(Experiment e) {
         ExperimentDTO dto = new ExperimentDTO();
         dto.id = e.id;

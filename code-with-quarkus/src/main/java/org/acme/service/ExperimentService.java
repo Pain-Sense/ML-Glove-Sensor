@@ -37,6 +37,13 @@ public class ExperimentService {
             throw new IllegalArgumentException("Device not found");
         }
 
+        if (!"available".equalsIgnoreCase(device.status)) {
+            throw new IllegalStateException("Device is not available (current status: " + device.status + ")");
+        }
+
+        device.status = "in_use";
+        em.merge(device);
+
         Experiment experiment = new Experiment();
         experiment.id = dto.id;
         experiment.name = dto.name;

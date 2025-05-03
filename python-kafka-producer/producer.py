@@ -5,6 +5,12 @@ import datetime
 from kafka import KafkaProducer
 import threading
 
+DEVICE_MAP = {
+    1: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    2: "aaaaaaa2-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    3: "aaaaaaa3-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+}
+
 def get_json_data(row, file_number):
     data = {}
     try:
@@ -19,7 +25,7 @@ def get_json_data(row, file_number):
     except ValueError:
         return None
 
-    data["file_number"] = file_number
+    data["deviceId"] = DEVICE_MAP[file_number]
     return json.dumps(data)
 
 def process_file(file, file_number, producer):

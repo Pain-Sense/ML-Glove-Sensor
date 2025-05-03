@@ -2,6 +2,7 @@ package org.acme.resource;
 
 import org.acme.dto.DeviceDTO;
 import org.acme.entity.Device;
+import org.acme.service.DeviceStreamTracker;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -10,6 +11,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Path("/devices")
@@ -19,6 +21,9 @@ public class DeviceResource {
 
     @Inject
     EntityManager em;
+
+    @Inject
+    DeviceStreamTracker deviceStreamTracker;
 
     @GET
     public List<DeviceDTO> getAll() {
@@ -34,6 +39,13 @@ public class DeviceResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(toDTO(device)).build();
+    }
+
+    @GET
+    @Path("/{id}/status")
+    public Response checkDeviceStatus(@PathParam("id") String id) {
+        boolean active = deviceStreamTracker.isDeviceActive(id);
+        return Response.ok(Map.of("available", active)).build();
     }
 
     @POST

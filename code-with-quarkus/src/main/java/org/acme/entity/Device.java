@@ -12,7 +12,7 @@ public class Device {
 
     public String name;
     public String type;
-    public String status;
+    public String status; // "available", "in_use", "maintenance"
 
     @OneToMany(mappedBy = "device")
     public List<org.acme.entity.Experiment> experiments;
