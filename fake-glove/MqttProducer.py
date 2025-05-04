@@ -20,7 +20,7 @@ def get_dict_from_data(row, file_number):
     except ValueError:
         return None
 
-    data["id"] = file_number
+    data["deviceId"] = file_number
     return data
 
 def process_file(file, file_number, mqttc):
@@ -57,7 +57,7 @@ def main():
 
     threads = []
 
-    for file_number in range(1, 6):
+    for file_number in range(1, 3):
         file = f"Data/sub_{file_number}.csv"
         thread = threading.Thread(target=process_file, args=(file, file_number, mqttc))
         threads.append(thread)
