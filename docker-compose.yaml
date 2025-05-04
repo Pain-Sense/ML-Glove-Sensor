@@ -1,7 +1,7 @@
 services:
   kafka:
     container_name: kafka
-    image: apache/kafka:4.0.0
+    image: bitnami/kafka:4.0.0
     ports:
       - "9092:9092"
     environment:
@@ -12,6 +12,7 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://localhost:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -84,39 +85,6 @@ services:
       - DOCKER_INFLUXDB_INIT_ORG=UA
       - DOCKER_INFLUXDB_INIT_BUCKET=bucket1
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=abc
-
-  spark-master:
-    image: bde2020/spark-master:latest
-    container_name: spark-master
-    hostname: spark-master
-    environment:
-      - SPARK_MODE=master
-    ports:
-      - "8080:8080"
-      - "7077:7077"
-
-  spark-worker:
-    image: bde2020/spark-worker:latest
-    container_name: spark-worker
-    depends_on:
-      - spark-master
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-    ports:
-      - "8081:8081"
-
-  jupyter:
-    image: jupyter/pyspark-notebook
-    container_name: jupyter
-    depends_on:
-      - spark-master
-    ports:
-      - "8888:8888"
-    volumes:
-      - ./notebooks:/home/jovyan/work:z
-    environment:
-      - SPARK_MASTER=spark://spark-master:7077
 
   telegraf:
     image: telegraf:1.30
