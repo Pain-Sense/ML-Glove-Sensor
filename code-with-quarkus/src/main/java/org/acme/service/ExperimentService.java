@@ -21,7 +21,7 @@ public class ExperimentService {
         return em.createQuery("FROM Experiment", Experiment.class).getResultList();
     }
 
-    public Experiment findById(String id) {
+    public Experiment findById(Long id) {
         return em.find(Experiment.class, id);
     }
 

@@ -6,7 +6,8 @@ import jakarta.persistence.*;
 public class Experiment {
 
     @Id
-    public String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long id;
 
     public String name;
     public String notes;

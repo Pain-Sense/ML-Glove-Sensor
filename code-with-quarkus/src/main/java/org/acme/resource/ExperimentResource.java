@@ -31,7 +31,7 @@ public class ExperimentResource {
 
     @GET
     @Path("/{id}")
-    public Response getById(@PathParam("id") String id) {
+    public Response getById(@PathParam("id") Long id) {
         Experiment experiment = em.find(Experiment.class, id);
         if (experiment == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -42,7 +42,7 @@ public class ExperimentResource {
     @POST
     @Transactional
     public Response create(ExperimentDTO dto) {
-        if (dto.id == null || dto.id.isBlank()) {
+        if (dto.id == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Experiment ID is required").build();
         }
 
@@ -70,7 +70,7 @@ public class ExperimentResource {
     @POST
     @Path("/{id}/stop")
     @Transactional
-    public Response stopExperiment(@PathParam("id") String id) {
+    public Response stopExperiment(@PathParam("id") Long id) {
         Experiment experiment = em.find(Experiment.class, id);
         
         if (experiment == null) return Response.status(404).build();

@@ -28,7 +28,7 @@ public class PatientResource {
 
     @GET
     @Path("/{id}")
-    public Response getById(@PathParam("id") String id) {
+    public Response getById(@PathParam("id") Long id) {
         Patient patient = em.find(Patient.class, id);
         if (patient == null) {
             return Response.status(Response.Status.NOT_FOUND).build();

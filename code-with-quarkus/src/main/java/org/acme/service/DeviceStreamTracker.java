@@ -17,7 +17,7 @@ public class DeviceStreamTracker {
 
     private static final Logger LOG = Logger.getLogger(DeviceStreamTracker.class);
 
-    private final Map<String, Instant> deviceActivity = new ConcurrentHashMap<>();
+    private final Map<Long, Instant> deviceActivity = new ConcurrentHashMap<>();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -30,10 +30,10 @@ public class DeviceStreamTracker {
             JsonNode root = objectMapper.readTree(message);
             JsonNode deviceNode = root.get("deviceId");
 
-            if (deviceNode != null && deviceNode.isTextual()) {
-                String deviceId = deviceNode.asText();
+            if (deviceNode != null && deviceNode.isNumber()) {
+                long deviceId = deviceNode.asLong();
                 deviceActivity.put(deviceId, Instant.now());
-                LOG.debugf("Device %s activity updated", deviceId);
+                LOG.debugf("Device %d activity updated", deviceId);
             } else {
                 LOG.warn("Received message without valid deviceId: " + message);
             }
@@ -43,10 +43,10 @@ public class DeviceStreamTracker {
         }
     }
 
-    public boolean isDeviceActive(String deviceId) {
+    public boolean isDeviceActive(Long deviceId) {
         Instant lastSeen = deviceActivity.get(deviceId);
         boolean active = lastSeen != null && Instant.now().minus(Duration.ofSeconds(timeoutInSeconds)).isBefore(lastSeen);
-        LOG.debugf("Checked device %s → active=%s", deviceId, active);
+        LOG.warnf("Checked device %d → active=%s", deviceId, active);
         return active;
     }
 }

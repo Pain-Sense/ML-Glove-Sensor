@@ -33,7 +33,7 @@ public class DeviceResource {
 
     @GET
     @Path("/{id}")
-    public Response getById(@PathParam("id") String id) {
+    public Response getById(@PathParam("id") Long id) {
         Device device = em.find(Device.class, id);
         if (device == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -43,7 +43,7 @@ public class DeviceResource {
 
     @GET
     @Path("/{id}/status")
-    public Response checkDeviceStatus(@PathParam("id") String id) {
+    public Response checkDeviceStatus(@PathParam("id") Long id) {
         boolean active = deviceStreamTracker.isDeviceActive(id);
         return Response.ok(Map.of("available", active)).build();
     }
@@ -51,7 +51,7 @@ public class DeviceResource {
     @POST
     @Transactional
     public Response create(DeviceDTO dto) {
-        if (dto.id == null || dto.id.isBlank()) {
+        if (dto.id == null) {
             return Response.status(Response.Status.BAD_REQUEST)
                 .entity("Device ID must be provided").build();
         }

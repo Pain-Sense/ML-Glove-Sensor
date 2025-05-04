@@ -8,7 +8,8 @@ import java.util.List;
 public class Device {
 
     @Id
-    public String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long id;
 
     public String name;
     public String type;

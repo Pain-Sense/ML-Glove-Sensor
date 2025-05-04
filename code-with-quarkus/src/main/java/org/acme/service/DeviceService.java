@@ -19,7 +19,7 @@ public class DeviceService {
         return em.createQuery("FROM Device", Device.class).getResultList();
     }
 
-    public Device findById(String id) {
+    public Device findById(Long id) {
         return em.find(Device.class, id);
     }
 

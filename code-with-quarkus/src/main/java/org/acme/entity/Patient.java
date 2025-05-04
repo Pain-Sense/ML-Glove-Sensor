@@ -7,7 +7,8 @@ import java.util.List;
 public class Patient {
 
     @Id
-    public String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long id;
 
     public String name;
     public String age;

@@ -19,7 +19,7 @@ public class PatientService {
         return em.createQuery("FROM Patient", Patient.class).getResultList();
     }
 
-    public Patient findById(String id) {
+    public Patient findById(Long id) {
         return em.find(Patient.class, id);
     }
 
