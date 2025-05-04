@@ -117,6 +117,7 @@ services:
     depends_on:
       - kafka
       - mysql
+      - influxdb
     restart: unless-stopped
 
   fake-glove-producer:
