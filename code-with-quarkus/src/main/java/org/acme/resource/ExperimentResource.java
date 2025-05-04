@@ -4,6 +4,8 @@ import org.acme.dto.ExperimentDTO;
 import org.acme.entity.Device;
 import org.acme.entity.Experiment;
 import org.acme.entity.Patient;
+import org.acme.service.DeviceAssignmentRegistry;
+import org.acme.service.InfluxService;
 
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -13,6 +15,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Path("/experiments")
@@ -22,6 +25,12 @@ public class ExperimentResource {
 
     @Inject
     EntityManager em;
+
+    @Inject
+    DeviceAssignmentRegistry assignmentRegistry;
+
+    @Inject
+    InfluxService influxService;
 
     @GET
     public List<ExperimentDTO> getAll() {
@@ -79,6 +88,7 @@ public class ExperimentResource {
         if (device != null) {
             device.status = "available";
             em.merge(device);
+            assignmentRegistry.unassign(device.id);
         }
 
         return Response.ok().build();
@@ -92,5 +102,36 @@ public class ExperimentResource {
         dto.patientId = e.patient != null ? e.patient.id : null;
         dto.deviceId = e.device != null ? e.device.id : null;
         return dto;
+    }
+
+    @GET
+    @Path("/{id}/metrics")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMetrics(
+        @PathParam("id") Long experimentId,
+        @QueryParam("start") @DefaultValue("-30s") String start,
+        @QueryParam("stop") @DefaultValue("now()") String stop
+    ) {
+        List<Map<String, Object>> results = influxService.queryMetricsInRange(
+            experimentId, start, stop
+        );
+        return Response.ok(results).build();
+    }
+
+    @GET
+    @Path("/{id}/metrics/aggregate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAggregatedMetrics(
+        @PathParam("id") Long experimentId,
+        @QueryParam("start") @DefaultValue("-5m") String start,
+        @QueryParam("stop") @DefaultValue("now()") String stop,
+        @QueryParam("window") @DefaultValue("5s") String window,
+        @QueryParam("aggregateFn") @DefaultValue("mean") String aggregateFn,
+        @QueryParam("field") @DefaultValue("bvp") String field
+    ) {
+        List<Map<String, Object>> result = influxService.queryAggregatedMetrics(
+            experimentId, field, start, stop, window, aggregateFn
+        );
+        return Response.ok(result).build();
     }
 }

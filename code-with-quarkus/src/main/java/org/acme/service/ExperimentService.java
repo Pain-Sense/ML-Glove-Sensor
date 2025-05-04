@@ -17,6 +17,9 @@ public class ExperimentService {
     @Inject
     EntityManager em;
 
+    @Inject
+    DeviceAssignmentRegistry assignmentRegistry;
+
     public List<Experiment> listAll() {
         return em.createQuery("FROM Experiment", Experiment.class).getResultList();
     }
@@ -52,6 +55,7 @@ public class ExperimentService {
         experiment.device = device;
 
         em.persist(experiment);
+        assignmentRegistry.assign(device.id, experiment.id);
         return experiment;
     }
 }
