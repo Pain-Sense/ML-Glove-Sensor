@@ -32,26 +32,14 @@ public class SensorDataEnricher {
             long deviceId = root.get("deviceId").asLong();
             Long experimentId = assignmentRegistry.getExperimentId(deviceId);
 
-            ObjectNode enriched = (ObjectNode) root;
-
             if (experimentId != null) {
-                enriched.put("experimentId", experimentId);
+                ((ObjectNode) root).put("experimentId", experimentId);
                 LOG.debugf("Enriched message from device %d with experiment %d", deviceId, experimentId);
             } else {
                 LOG.debugf("No active experiment for device %d. Skipping enrichment.", deviceId);
             }
 
-            JsonNode bvpNode = root.get("bvp");
-            JsonNode gsrNode = root.get("gsr");
-
-            if (bvpNode != null && gsrNode != null && bvpNode.isNumber() && gsrNode.isNumber()) {
-                double bvp = bvpNode.asDouble();
-                double gsr = gsrNode.asDouble();
-                double ecg = (bvp + gsr) / 10.0;
-                enriched.put("ecg", ecg);
-            }
-
-            return objectMapper.writeValueAsString(enriched);
+            return objectMapper.writeValueAsString(root);
         } catch (Exception e) {
             LOG.error("Failed to enrich message: " + rawMessage, e);
             return rawMessage; // Return the original message in case of error
