@@ -25,4 +25,8 @@ public class DeviceAssignmentRegistry {
     public boolean isAssigned(Long deviceId) {
         return activeAssignments.containsKey(deviceId);
     }
+
+    public Map<Long, Long> getAllAssignments() {
+        return Map.copyOf(activeAssignments);
+    }
 }

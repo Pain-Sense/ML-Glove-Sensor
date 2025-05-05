@@ -10,6 +10,7 @@ import org.jboss.logging.Logger;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
@@ -48,5 +49,13 @@ public class DeviceStreamTracker {
         boolean active = lastSeen != null && Instant.now().minus(Duration.ofSeconds(timeoutInSeconds)).isBefore(lastSeen);
         LOG.warnf("Checked device %d → active=%s", deviceId, active);
         return active;
+    }
+
+    public List<Long> getActiveDevices() {
+        Instant now = Instant.now();
+        return deviceActivity.entrySet().stream()
+            .filter(e -> now.minus(Duration.ofSeconds(timeoutInSeconds)).isBefore(e.getValue()))
+            .map(Map.Entry::getKey)
+            .toList();
     }
 }
