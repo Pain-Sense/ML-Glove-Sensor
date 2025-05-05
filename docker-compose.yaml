@@ -56,18 +56,18 @@ services:
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=abc
 
   mysql:
-      container_name: mysql
-      ports:
-        - '3306:3306'
-      image: 'docker.io/mysql:8.0'
-      volumes:
-        - ./mysql-init:/docker-entrypoint-initdb.d:z
-        - mysql-data:/var/lib/mysql
-      environment:
-        MYSQL_DATABASE: sql_data
-        MYSQL_USER: admin
-        MYSQL_PASSWORD: admin123
-        MYSQL_ROOT_PASSWORD: admin123
+    container_name: mysql
+    ports:
+      - '3306:3306'
+    image: 'docker.io/mysql:8.0'
+    volumes:
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: sql_data
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+      MYSQL_ROOT_PASSWORD: admin123
 
 
   grafana:
