@@ -36,8 +36,8 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <p className='text-muted-foreground'>
-                Begin a real-time monitoring experiment by selecting a patient and
-                device.
+                Begin a real-time monitoring experiment by selecting a patient
+                and device.
               </p>
             </CardContent>
             <CardFooter>
@@ -46,19 +46,6 @@ export default function Dashboard() {
               >
                 Start Monitoring
               </Button>
-            </CardFooter>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Create New Patient</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className='text-muted-foreground'>
-                Add a new patient to the system by entering basic details.
-              </p>
-            </CardContent>
-            <CardFooter className='mt-auto'>
-              <Button onClick={() => {}}>Create Patient</Button>
             </CardFooter>
           </Card>
         </div>
