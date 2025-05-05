@@ -140,7 +140,7 @@ export default function LiveMonitoring() {
 
         <div className='mt-6 flex flex-col items-end gap-4 md:flex-row md:justify-end'>
           <Select
-            defaultValue='3000'
+            defaultValue={String(pollingInterval)}
             onValueChange={(value) => setPollingInterval(Number(value))}
           >
             <SelectTrigger className='w-[180px]'>
