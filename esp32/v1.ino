@@ -110,12 +110,11 @@ void loop () {
   client.loop();
 
 
-
-                     String payload = String("{\"timestamp\":\"") +
-                   String(now.timestamp()) + "\",\"bvp\":" +
-                   ppgValue + ",\"gsr\":" +
-                   gsrValue + ",\"id\":" +
-                   10 + "}";
+String payload = String("{\"timestamp\":\"") +
+                 String(now.timestamp()) + "Z\",\"bvp\":" +
+                 ppgValue + ",\"gsr\":" +
+                 gsrValue + ",\"deviceId\":" +
+                 10 + "}";
 
 
   client.publish("sensors", payload.c_str());
