@@ -3,6 +3,7 @@ package org.acme.resource;
 import org.acme.dto.DeviceDTO;
 import org.acme.entity.Device;
 import org.acme.service.DeviceStreamTracker;
+import org.acme.service.DeviceAssignmentRegistry;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -25,6 +26,9 @@ public class DeviceResource {
     @Inject
     DeviceStreamTracker deviceStreamTracker;
 
+    @Inject
+    DeviceAssignmentRegistry assignmentRegistry;
+
     @GET
     public List<DeviceDTO> getAll() {
         List<Device> devices = em.createQuery("FROM Device", Device.class).getResultList();
@@ -44,20 +48,18 @@ public class DeviceResource {
     @GET
     @Path("/{id}/status")
     public Response checkDeviceStatus(@PathParam("id") Long id) {
-        boolean active = deviceStreamTracker.isDeviceActive(id);
-        return Response.ok(Map.of("available", active)).build();
+        boolean isActive = deviceStreamTracker.isDeviceActive(id);
+        boolean isAssigned = assignmentRegistry.getExperimentId(id) != null;
+
+        boolean available = isActive && !isAssigned;
+
+        return Response.ok(Map.of("available", available)).build();
     }
 
     @POST
     @Transactional
     public Response create(DeviceDTO dto) {
-        if (dto.id == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                .entity("Device ID must be provided").build();
-        }
-
         Device device = new Device();
-        device.id = dto.id;
         device.name = dto.name;
         device.type = dto.type;
         device.status = dto.status;

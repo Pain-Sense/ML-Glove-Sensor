@@ -1,7 +1,14 @@
-"use client"
+'use client'
 
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 
 type DataPoint = { t: number; value: number }
 
@@ -24,16 +31,16 @@ export default function LiveECGChart() {
   }, [t])
 
   return (
-    <div className="h-40 w-full">
-      <ResponsiveContainer width="100%" height="100%">
+    <div className='h-40 w-full'>
+      <ResponsiveContainer width='100%' height='100%'>
         <LineChart data={data}>
-          <XAxis dataKey="t" tick={{ fontSize: 10 }} />
+          <XAxis dataKey='t' tick={{ fontSize: 10 }} />
           <YAxis domain={[-2, 2]} tick={{ fontSize: 10 }} />
           <Tooltip />
           <Line
-            type="monotone"
-            dataKey="value"
-            stroke="currentColor"
+            type='monotone'
+            dataKey='value'
+            stroke='currentColor'
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}

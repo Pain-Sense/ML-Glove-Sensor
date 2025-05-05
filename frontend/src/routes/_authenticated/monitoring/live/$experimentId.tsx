@@ -1,6 +1,8 @@
-import LiveMonitoring from "@/features/monitoring/live"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute } from '@tanstack/react-router'
+import LiveMonitoring from '@/features/monitoring/live'
 
-export const Route = createFileRoute("/_authenticated/monitoring/live/$experimentId")({
+export const Route = createFileRoute(
+  '/_authenticated/monitoring/live/$experimentId'
+)({
   component: LiveMonitoring,
 })

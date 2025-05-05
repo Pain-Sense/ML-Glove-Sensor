@@ -128,6 +128,13 @@ services:
     restart: unless-stopped
 
 
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    restart: unless-stopped
+
 volumes:
   mysql-data:
   influxdb-data:

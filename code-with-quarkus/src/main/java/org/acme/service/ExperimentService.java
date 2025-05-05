@@ -58,4 +58,19 @@ public class ExperimentService {
         assignmentRegistry.assign(device.id, experiment.id);
         return experiment;
     }
+
+    @Transactional
+    public void stopExperiment(Long experimentId) {
+        Experiment experiment = em.find(Experiment.class, experimentId);
+        if (experiment == null) {
+            throw new IllegalArgumentException("Experiment not found");
+        }
+
+        Device device = experiment.device;
+        if (device != null) {
+            device.status = "available";
+            em.merge(device);
+            assignmentRegistry.unassign(device.id);
+        }
+    }
 }
