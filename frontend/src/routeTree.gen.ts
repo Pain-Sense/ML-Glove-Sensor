@@ -21,8 +21,6 @@ import { Route as errors401Import } from './routes/(errors)/401'
 import { Route as authSignUpImport } from './routes/(auth)/sign-up'
 import { Route as authSignIn2Import } from './routes/(auth)/sign-in-2'
 import { Route as authSignInImport } from './routes/(auth)/sign-in'
-import { Route as authOtpImport } from './routes/(auth)/otp'
-import { Route as authForgotPasswordImport } from './routes/(auth)/forgot-password'
 import { Route as AuthenticatedMonitoringNewExperimentIndexImport } from './routes/_authenticated/monitoring/new-experiment/index'
 import { Route as AuthenticatedMonitoringLiveExperimentIdImport } from './routes/_authenticated/monitoring/live/$experimentId'
 
@@ -87,18 +85,6 @@ const authSignInRoute = authSignInImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const authOtpRoute = authOtpImport.update({
-  id: '/(auth)/otp',
-  path: '/otp',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const authForgotPasswordRoute = authForgotPasswordImport.update({
-  id: '/(auth)/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const AuthenticatedMonitoringNewExperimentIndexRoute =
   AuthenticatedMonitoringNewExperimentIndexImport.update({
     id: '/monitoring/new-experiment/',
@@ -122,20 +108,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AuthenticatedRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/(auth)/forgot-password': {
-      id: '/(auth)/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof authForgotPasswordImport
-      parentRoute: typeof rootRoute
-    }
-    '/(auth)/otp': {
-      id: '/(auth)/otp'
-      path: '/otp'
-      fullPath: '/otp'
-      preLoaderRoute: typeof authOtpImport
       parentRoute: typeof rootRoute
     }
     '/(auth)/sign-in': {
@@ -239,8 +211,6 @@ const AuthenticatedRouteRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof AuthenticatedRouteRouteWithChildren
-  '/forgot-password': typeof authForgotPasswordRoute
-  '/otp': typeof authOtpRoute
   '/sign-in': typeof authSignInRoute
   '/sign-in-2': typeof authSignIn2Route
   '/sign-up': typeof authSignUpRoute
@@ -255,8 +225,6 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
-  '/forgot-password': typeof authForgotPasswordRoute
-  '/otp': typeof authOtpRoute
   '/sign-in': typeof authSignInRoute
   '/sign-in-2': typeof authSignIn2Route
   '/sign-up': typeof authSignUpRoute
@@ -273,8 +241,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/(auth)/forgot-password': typeof authForgotPasswordRoute
-  '/(auth)/otp': typeof authOtpRoute
   '/(auth)/sign-in': typeof authSignInRoute
   '/(auth)/sign-in-2': typeof authSignIn2Route
   '/(auth)/sign-up': typeof authSignUpRoute
@@ -292,8 +258,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
-    | '/forgot-password'
-    | '/otp'
     | '/sign-in'
     | '/sign-in-2'
     | '/sign-up'
@@ -307,8 +271,6 @@ export interface FileRouteTypes {
     | '/monitoring/new-experiment'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/forgot-password'
-    | '/otp'
     | '/sign-in'
     | '/sign-in-2'
     | '/sign-up'
@@ -323,8 +285,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
-    | '/(auth)/forgot-password'
-    | '/(auth)/otp'
     | '/(auth)/sign-in'
     | '/(auth)/sign-in-2'
     | '/(auth)/sign-up'
@@ -341,8 +301,6 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  authForgotPasswordRoute: typeof authForgotPasswordRoute
-  authOtpRoute: typeof authOtpRoute
   authSignInRoute: typeof authSignInRoute
   authSignIn2Route: typeof authSignIn2Route
   authSignUpRoute: typeof authSignUpRoute
@@ -355,8 +313,6 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  authForgotPasswordRoute: authForgotPasswordRoute,
-  authOtpRoute: authOtpRoute,
   authSignInRoute: authSignInRoute,
   authSignIn2Route: authSignIn2Route,
   authSignUpRoute: authSignUpRoute,
@@ -378,8 +334,6 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_authenticated",
-        "/(auth)/forgot-password",
-        "/(auth)/otp",
         "/(auth)/sign-in",
         "/(auth)/sign-in-2",
         "/(auth)/sign-up",
@@ -397,12 +351,6 @@ export const routeTree = rootRoute
         "/_authenticated/monitoring/live/$experimentId",
         "/_authenticated/monitoring/new-experiment/"
       ]
-    },
-    "/(auth)/forgot-password": {
-      "filePath": "(auth)/forgot-password.tsx"
-    },
-    "/(auth)/otp": {
-      "filePath": "(auth)/otp.tsx"
     },
     "/(auth)/sign-in": {
       "filePath": "(auth)/sign-in.tsx"
