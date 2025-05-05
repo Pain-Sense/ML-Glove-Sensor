@@ -59,13 +59,7 @@ public class DeviceResource {
     @POST
     @Transactional
     public Response create(DeviceDTO dto) {
-        if (dto.id == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                .entity("Device ID must be provided").build();
-        }
-
         Device device = new Device();
-        device.id = dto.id;
         device.name = dto.name;
         device.type = dto.type;
         device.status = dto.status;
