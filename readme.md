@@ -6,5 +6,15 @@ docker compose up --build
 # Grafana is available on: (username: admin and password: admin)
 http://localhost:3000/
 
-# for testing purposes you can call this endpoint to let quarkus service process some data from kafka
-curl -X POST http://localhost:8089/kafka/send
+
+# Testing info
+
+## Debug endpoints
+
+### Get active devices
+
+Returns a list of devices that are actively sending sensor data (recently seen on the `SensorData` Kafka topic).
+
+```bash
+curl http://localhost:8089/debug/devices/active
+´´´
