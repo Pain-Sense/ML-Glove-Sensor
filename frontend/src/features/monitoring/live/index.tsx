@@ -125,9 +125,6 @@ export default function LiveMonitoring() {
                 <strong>Device ID:</strong>{' '}
                 {experimentInfo?.deviceId || 'N/A'}
               </p>
-              <p>
-                <strong>Status:</strong> {isPaused ? 'Paused' : 'Running'}
-              </p>
             </CardContent>
           </Card>
 
@@ -157,9 +154,6 @@ export default function LiveMonitoring() {
             </SelectContent>
           </Select>
 
-          <Button variant='outline' onClick={() => setIsPaused((p) => !p)}>
-            {isPaused ? 'Resume' : 'Pause'}
-          </Button>
           <Button variant='destructive' onClick={handleStop}>
             Stop
           </Button>
