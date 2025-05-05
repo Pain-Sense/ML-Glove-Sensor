@@ -51,10 +51,6 @@ public class ExperimentResource {
     @POST
     @Transactional
     public Response create(ExperimentDTO dto) {
-        if (dto.id == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Experiment ID is required").build();
-        }
-
         Patient patient = em.find(Patient.class, dto.patientId);
         if (patient == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Patient not found").build();
@@ -66,7 +62,6 @@ public class ExperimentResource {
         }
 
         Experiment experiment = new Experiment();
-        experiment.id = dto.id;
         experiment.name = dto.name;
         experiment.notes = dto.notes;
         experiment.patient = patient;
