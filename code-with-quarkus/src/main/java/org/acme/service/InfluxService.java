@@ -28,7 +28,7 @@ public class InfluxService {
     @ConfigProperty(name = "influx.bucket")
     String influxBucket;
 
-    private String measurement = "ProcessedSensorData";
+    private String measurement = "processed_sensor_data";
 
     private InfluxDBClient client;
 
