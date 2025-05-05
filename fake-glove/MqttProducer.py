@@ -3,39 +3,44 @@ import argparse
 import csv
 import json
 import threading
+import datetime
 import time
 from math import floor
+
+# Global start time for all devices/files
+start_time = datetime.datetime.utcnow()
 
 def get_dict_from_data(row, file_number):
     data = {}
     try:
-        dt = datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")
+        offset_seconds = float(row[0])
+        dt = start_time + datetime.timedelta(seconds=offset_seconds)
         data["timestamp"] = dt.isoformat() + "Z"
     except Exception as e:
-        data["timestamp"] = row[0]
+        print(f"Timestamp conversion error for row {row}: {e}")
+        return None
 
     try:
         data["bvp"] = float(row[2])
         data["gsr"] = float(row[3])
-    except ValueError:
+    except ValueError as e:
+        print(f"Value conversion error for row {row}: {e}")
         return None
 
-    data["id"] = file_number
+    data["deviceId"] = file_number
     return data
 
 def process_file(file, file_number, mqttc):
     with open(file, 'r') as f:
         reader = csv.reader(f)
         header = next(reader, None)
-        print("Starting to send data.")
+        print(f"Starting to send data from {file}.")
 
         for row in reader:
             data = get_dict_from_data(row, file_number)
             if data:
                 mqttc.publish("sensors", json.dumps(data))
-                ts = floor(float(data["timestamp"]))
-                if (ts > 0) and (ts % 1000 == 0):
-                    print(f"Sent 1000 rows of sensor data. The latest was: {data}")
+                print(f"Published: {data}")
                 time.sleep(0.1)
 
 def main():
@@ -57,7 +62,7 @@ def main():
 
     threads = []
 
-    for file_number in range(1, 6):
+    for file_number in range(1, 3):
         file = f"Data/sub_{file_number}.csv"
         thread = threading.Thread(target=process_file, args=(file, file_number, mqttc))
         threads.append(thread)
