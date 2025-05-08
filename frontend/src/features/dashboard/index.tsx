@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,9 +11,11 @@ import {
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { Experiment, ExperimentSelector } from './components/ExperimentSelector'
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const [experiment, setExperiment] = useState<Experiment | null>(null)
 
   return (
     <>
@@ -41,10 +44,22 @@ export default function Dashboard() {
               </p>
             </CardContent>
             <CardFooter>
+              <ExperimentSelector onChange={(e) => setExperiment(e)}></ExperimentSelector>
+            </CardFooter>
+            <CardFooter>
+              {experiment && (
+                <Button
+                  onClick={() => navigate({ to: `/monitoring/live/${experiment.id}` })}
+                >
+                  Start monitoring
+                </Button>
+              )}
+            </CardFooter>
+            <CardFooter>
               <Button
                 onClick={() => navigate({ to: '/monitoring/new-experiment' })}
               >
-                Start Monitoring
+                New experiment
               </Button>
             </CardFooter>
           </Card>
