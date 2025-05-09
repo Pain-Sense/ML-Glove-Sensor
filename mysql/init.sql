@@ -21,6 +21,7 @@ CREATE TABLE experiments (
   id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   notes TEXT,
+  stopped INT,
   patient_id BIGINT,
   device_id BIGINT,
   CONSTRAINT fk_experiment_patient FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,

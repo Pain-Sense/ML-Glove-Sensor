@@ -28,7 +28,7 @@ export const ExperimentSelector: React.FC<ExperimentSelectorProps> = ({
   )
 
   const fetchExperiments = async () => {
-    fetch('http://localhost:8089/experiments')
+    fetch('http://localhost:8089/experiments/notstopped')
       .then((res) => res.json())
       .then((data) => setExperiments(data))
       // eslint-disable-next-line no-console

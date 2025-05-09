@@ -24,6 +24,10 @@ public class ExperimentService {
         return em.createQuery("FROM Experiment", Experiment.class).getResultList();
     }
 
+    public List<Experiment> listNotStopped() {
+        return em.createQuery("FROM Experiment WHERE stopped=false", Experiment.class).getResultList();
+    }
+
     public Experiment findById(Long id) {
         return em.find(Experiment.class, id);
     }
@@ -71,6 +75,7 @@ public class ExperimentService {
             device.status = "available";
             em.merge(device);
             assignmentRegistry.unassign(device.id);
+            experiment.stopped = true;
         }
     }
 }
