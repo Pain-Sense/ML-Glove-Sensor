@@ -45,15 +45,15 @@ export default function DataHistoryDashboard() {
             <CardFooter>
               <ExperimentSelector onChange={(e) => setExperiment(e)}></ExperimentSelector>
             </CardFooter>
-            <CardFooter>
-              {experiment && (
+            {experiment && (
+              <CardFooter>
                 <Button
-                  onClick={() => navigate({ to: `/datahistory/${experiment.id}` })}
+                  onClick={() => navigate({ to: `/data-history/${experiment.id}` })}
                 >
                   View data history
                 </Button>
-              )}
-            </CardFooter>
+              </CardFooter>
+            )}
           </Card>
         </div>
       </Main>

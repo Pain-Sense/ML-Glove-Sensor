@@ -23,7 +23,8 @@ import { Route as authSignIn2Import } from './routes/(auth)/sign-in-2'
 import { Route as authSignInImport } from './routes/(auth)/sign-in'
 import { Route as AuthenticatedMonitoringNewExperimentIndexImport } from './routes/_authenticated/monitoring/new-experiment/index'
 import { Route as AuthenticatedMonitoringLiveExperimentIdImport } from './routes/_authenticated/monitoring/live/$experimentId'
-import { Route as AuthenticatedDataHistoryIndexImport } from './routes/_authenticated/data-history'
+import { Route as AuthenticatedDataHistoryIndexImport } from './routes/_authenticated/data-history/index'
+import { Route as AuthenticatedDataHistoryExperimentIdImport } from './routes/_authenticated/data-history/$experimentId'
 
 // Create/Update Routes
 
@@ -102,8 +103,15 @@ const AuthenticatedMonitoringLiveExperimentIdRoute =
 
 const AuthenticatedDataHistoryIndexRoute =
   AuthenticatedDataHistoryIndexImport.update({
-    id: '/monitoring/data-history/',
-    path: '/monitoring/data-history/',
+    id: '/data-history/',
+    path: '/data-history/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedDataHistoryExperimentIdRoute =
+  AuthenticatedDataHistoryExperimentIdImport.update({
+    id: '/data-history/$experimentId',
+    path: '/data-history/$experimentId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -202,6 +210,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDataHistoryIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/data-history/$experimentId': {
+      id: '/_authenticated/data-history/$experimentId'
+      path: '/data-history/$experimentId'
+      fullPath: '/data-history/$experimentId'
+      preLoaderRoute: typeof AuthenticatedDataHistoryExperimentIdImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
   }
 }
 
@@ -212,6 +227,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMonitoringLiveExperimentIdRoute: typeof AuthenticatedMonitoringLiveExperimentIdRoute
   AuthenticatedMonitoringNewExperimentIndexRoute: typeof AuthenticatedMonitoringNewExperimentIndexRoute
   AuthenticatedDataHistoryIndexRoute: typeof AuthenticatedDataHistoryIndexRoute
+  AuthenticatedDataHistoryExperimentIdRoute: typeof AuthenticatedDataHistoryExperimentIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -222,6 +238,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedMonitoringNewExperimentIndexRoute,
   AuthenticatedDataHistoryIndexRoute:
     AuthenticatedDataHistoryIndexRoute,
+  AuthenticatedDataHistoryExperimentIdRoute:
+    AuthenticatedDataHistoryExperimentIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -241,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/monitoring/live/$experimentId': typeof AuthenticatedMonitoringLiveExperimentIdRoute
   '/monitoring/new-experiment': typeof AuthenticatedMonitoringNewExperimentIndexRoute
   '/data-history': typeof AuthenticatedDataHistoryIndexRoute
+  '/data-history/$experimentId': typeof AuthenticatedDataHistoryExperimentIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -256,6 +275,7 @@ export interface FileRoutesByTo {
   '/monitoring/live/$experimentId': typeof AuthenticatedMonitoringLiveExperimentIdRoute
   '/monitoring/new-experiment': typeof AuthenticatedMonitoringNewExperimentIndexRoute
   '/data-history': typeof AuthenticatedDataHistoryIndexRoute
+  '/data-history/$experimentId': typeof AuthenticatedDataHistoryExperimentIdRoute
 }
 
 export interface FileRoutesById {
@@ -273,6 +293,7 @@ export interface FileRoutesById {
   '/_authenticated/monitoring/live/$experimentId': typeof AuthenticatedMonitoringLiveExperimentIdRoute
   '/_authenticated/monitoring/new-experiment/': typeof AuthenticatedMonitoringNewExperimentIndexRoute
   '/_authenticated/data-history': typeof AuthenticatedDataHistoryIndexRoute
+  '/_authenticated/data-history/$experimentId': typeof AuthenticatedDataHistoryExperimentIdRoute
 }
 
 export interface FileRouteTypes {
@@ -291,6 +312,7 @@ export interface FileRouteTypes {
     | '/monitoring/live/$experimentId'
     | '/monitoring/new-experiment'
     | '/data-history'
+    | '/data-history/$experimentId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/sign-in'
@@ -305,6 +327,7 @@ export interface FileRouteTypes {
     | '/monitoring/live/$experimentId'
     | '/monitoring/new-experiment'
     | '/data-history'
+    | '/data-history/$experimentId'
   id:
     | '__root__'
     | '/_authenticated'
@@ -320,6 +343,7 @@ export interface FileRouteTypes {
     | '/_authenticated/monitoring/live/$experimentId'
     | '/_authenticated/monitoring/new-experiment/'
     | '/_authenticated/data-history'
+    | '/_authenticated/data-history/$experimentId'
   fileRoutesById: FileRoutesById
 }
 
