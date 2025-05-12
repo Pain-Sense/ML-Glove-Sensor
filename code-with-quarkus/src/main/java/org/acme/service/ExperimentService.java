@@ -28,6 +28,10 @@ public class ExperimentService {
         return em.createQuery("FROM Experiment WHERE stopped=false", Experiment.class).getResultList();
     }
 
+    public List<Experiment> listStopped() {
+        return em.createQuery("FROM Experiment WHERE stopped=true", Experiment.class).getResultList();
+    }
+
     public Experiment findById(Long id) {
         return em.find(Experiment.class, id);
     }

@@ -38,6 +38,12 @@ public class ExperimentResource {
     }
 
     @GET
+    @Path("/stopped")
+    public List<ExperimentDTO> getAllStopped() {
+        return experimentService.listStopped().stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @GET
     @Path("/{id}")
     public Response getById(@PathParam("id") Long id) {
         Experiment experiment = experimentService.findById(id);

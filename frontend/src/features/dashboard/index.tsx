@@ -46,15 +46,15 @@ export default function Dashboard() {
             <CardFooter>
               <ExperimentSelector onChange={(e) => setExperiment(e)}></ExperimentSelector>
             </CardFooter>
-            <CardFooter>
-              {experiment && (
+            {experiment && (
+              <CardFooter>
                 <Button
                   onClick={() => navigate({ to: `/monitoring/live/${experiment.id}` })}
                 >
                   Start monitoring
                 </Button>
-              )}
-            </CardFooter>
+              </CardFooter>
+            )}
             <CardFooter>
               <Button
                 onClick={() => navigate({ to: '/monitoring/new-experiment' })}
