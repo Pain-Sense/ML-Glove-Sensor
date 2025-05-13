@@ -8,7 +8,8 @@ import time
 from math import floor
 
 # Global start time for all devices/files
-start_time = datetime.datetime.utcnow()
+#change teste para eniar mensagens com um timestamp especifico 
+start_time = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
 
 def get_dict_from_data(row, file_number):
     data = {}
