@@ -38,7 +38,7 @@ export default function DataHistoryView() {
     const fetchMetrics = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8089/experiments/${experimentId}/metrics`
+          `http://localhost:8089/experiments/${experimentId}/history`
         )
         const data = await res.json()
         setMetrics(data)

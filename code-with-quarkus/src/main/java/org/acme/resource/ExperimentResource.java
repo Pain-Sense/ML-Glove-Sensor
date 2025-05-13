@@ -90,6 +90,17 @@ public class ExperimentResource {
     }
 
     @GET
+    @Path("/{id}/history")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getHistory(
+        @PathParam("id") Long experimentId,
+        @QueryParam("start") @DefaultValue("2025-01-01T00:00:00Z") String start
+    ) {
+        List<Map<String, Object>> results = influxService.queryHistory(experimentId, start);
+        return Response.ok(results).build();
+    }
+
+    @GET
     @Path("/{id}/metrics/aggregate")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAggregatedMetrics(
