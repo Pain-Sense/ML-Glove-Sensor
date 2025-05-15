@@ -1,26 +1,23 @@
-import { Kafka } from 'kafkajs';
+import { useEffect, useState } from "react"
 
-const kafka = new Kafka({
-    clientId: 'frontend',
-    brokers: ['localhost:9092'],
-})
+export default function EventReader() {
+    const [message, setMessage] = useState('');
 
-const consumer = kafka.consumer({groupId: 'groupFrontend'})
-
-const runConsumer = async() => {
-    await consumer.connect();
-    await consumer.subscribe({topic: 'eventos', fromBeginning: true});
-    await consumer.run({
-        eachMessage: async ({message}) => {
-            if (message.value){
-                const res = message.value.toString()
-                const data = JSON.parse(res)
-                if (data.sensor === "off") {
-                    console.log("Device no %d is offline", data.deviceId)
-                }
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const response = await fetch('http://localhost:8089/events')
+                const res = await response.json()
+                if (res.event === 'sensor-off')
+                setMessage(`Device with id ${res.deviceId} is offline`)
+            } catch (error) {
+                console.error('Error fetching events:',error)
             }
         }
-    })
-}
+        fetchEvents()
+    },[])
 
-runConsumer()
+    return (
+        <div>{message}</div>
+    )
+}
