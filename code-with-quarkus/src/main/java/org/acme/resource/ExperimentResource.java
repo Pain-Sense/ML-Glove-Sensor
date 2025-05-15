@@ -1,18 +1,15 @@
 package org.acme.resource;
 
 import org.acme.dto.ExperimentDTO;
-import org.acme.entity.Device;
 import org.acme.entity.Experiment;
-import org.acme.entity.Patient;
-import org.acme.service.DeviceAssignmentRegistry;
+import org.acme.service.ExperimentService;
 import org.acme.service.InfluxService;
 
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -24,24 +21,32 @@ import java.util.stream.Collectors;
 public class ExperimentResource {
 
     @Inject
-    EntityManager em;
-
-    @Inject
-    DeviceAssignmentRegistry assignmentRegistry;
+    ExperimentService experimentService;
 
     @Inject
     InfluxService influxService;
 
     @GET
     public List<ExperimentDTO> getAll() {
-        List<Experiment> experiments = em.createQuery("FROM Experiment", Experiment.class).getResultList();
-        return experiments.stream().map(this::toDTO).collect(Collectors.toList());
+        return experimentService.listAll().stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @GET
+    @Path("/notstopped")
+    public List<ExperimentDTO> getAllNotStopped() {
+        return experimentService.listNotStopped().stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @GET
+    @Path("/stopped")
+    public List<ExperimentDTO> getAllStopped() {
+        return experimentService.listStopped().stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @GET
     @Path("/{id}")
     public Response getById(@PathParam("id") Long id) {
-        Experiment experiment = em.find(Experiment.class, id);
+        Experiment experiment = experimentService.findById(id);
         if (experiment == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -51,57 +56,25 @@ public class ExperimentResource {
     @POST
     @Transactional
     public Response create(ExperimentDTO dto) {
-        if (dto.id == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Experiment ID is required").build();
+        try {
+            Experiment experiment = experimentService.create(dto);
+            return Response.status(Response.Status.CREATED).entity(toDTO(experiment)).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (IllegalStateException e) {
+            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
         }
-
-        Patient patient = em.find(Patient.class, dto.patientId);
-        if (patient == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Patient not found").build();
-        }
-
-        Device device = em.find(Device.class, dto.deviceId);
-        if (device == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Device not found").build();
-        }
-
-        Experiment experiment = new Experiment();
-        experiment.id = dto.id;
-        experiment.name = dto.name;
-        experiment.notes = dto.notes;
-        experiment.patient = patient;
-        experiment.device = device;
-
-        em.persist(experiment);
-        return Response.status(Response.Status.CREATED).entity(toDTO(experiment)).build();
     }
 
     @POST
     @Path("/{id}/stop")
     @Transactional
     public Response stopExperiment(@PathParam("id") Long id) {
-        Experiment experiment = em.find(Experiment.class, id);
-        
+        Experiment experiment = experimentService.findById(id);
         if (experiment == null) return Response.status(404).build();
 
-        Device device = experiment.device;
-        if (device != null) {
-            device.status = "available";
-            em.merge(device);
-            assignmentRegistry.unassign(device.id);
-        }
-
+        experimentService.stopExperiment(experiment.id);
         return Response.ok().build();
-    }
-
-    private ExperimentDTO toDTO(Experiment e) {
-        ExperimentDTO dto = new ExperimentDTO();
-        dto.id = e.id;
-        dto.name = e.name;
-        dto.notes = e.notes;
-        dto.patientId = e.patient != null ? e.patient.id : null;
-        dto.deviceId = e.device != null ? e.device.id : null;
-        return dto;
     }
 
     @GET
@@ -112,9 +85,18 @@ public class ExperimentResource {
         @QueryParam("start") @DefaultValue("-30s") String start,
         @QueryParam("stop") @DefaultValue("now()") String stop
     ) {
-        List<Map<String, Object>> results = influxService.queryMetricsInRange(
-            experimentId, start, stop
-        );
+        List<Map<String, Object>> results = influxService.queryMetricsInRange(experimentId, start, stop);
+        return Response.ok(results).build();
+    }
+
+    @GET
+    @Path("/{id}/history")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getHistory(
+        @PathParam("id") Long experimentId,
+        @QueryParam("start") @DefaultValue("2025-01-01T00:00:00Z") String start
+    ) {
+        List<Map<String, Object>> results = influxService.queryHistory(experimentId, start);
         return Response.ok(results).build();
     }
 
@@ -133,5 +115,15 @@ public class ExperimentResource {
             experimentId, field, start, stop, window, aggregateFn
         );
         return Response.ok(result).build();
+    }
+
+    private ExperimentDTO toDTO(Experiment e) {
+        ExperimentDTO dto = new ExperimentDTO();
+        dto.id = e.id;
+        dto.name = e.name;
+        dto.notes = e.notes;
+        dto.patientId = e.patient != null ? e.patient.id : null;
+        dto.deviceId = e.device != null ? e.device.id : null;
+        return dto;
     }
 }
