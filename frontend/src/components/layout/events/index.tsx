@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { toast, ToastContainer } from "react-toastify";
 
-export default function EventReader() {
+export function EventReader() {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
