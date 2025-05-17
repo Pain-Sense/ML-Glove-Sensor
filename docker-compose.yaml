@@ -71,11 +71,12 @@ services:
 
 
   grafana:
-    image: grafana/grafana-oss:8.4.3
+    image: grafana/grafana:10.0.0
     volumes:
       - grafana-data:/var/lib/grafana:z
       - ./grafana-provisioning/:/etc/grafana/provisioning:z
     depends_on:
+      - telegraf
       - influxdb
       - mysql
     ports:
@@ -83,6 +84,7 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-mqtt-datasource
       - DOCKER_INFLUXDB_INIT_ORG=UA
       - DOCKER_INFLUXDB_INIT_BUCKET=bucket1
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=abc
