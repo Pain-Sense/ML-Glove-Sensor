@@ -37,7 +37,7 @@ datasources:
     type: grafana-mqtt-datasource
     access: proxy
     url: tcp://mosquitto:1883
-    isDefault: true
+    isDefault: false
     jsonData:
       brokerUrl: tcp://mosquitto:1883
       topics:
