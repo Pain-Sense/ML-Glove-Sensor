@@ -18,4 +18,4 @@ COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
 ENTRYPOINT ["/opt/bitnami/kafka/bin/connect-standalone.sh"]
-CMD ["/opt/kafka-connect/config/connect-standalone.properties", "/opt/kafka-connect/config/mqtt-source.config"]
+CMD ["/opt/kafka-connect/config/connect-standalone.properties", "/opt/kafka-connect/config/mqtt-source.config", "/opt/kafka-connect/config/mqtt-source-packed.config"]

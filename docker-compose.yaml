@@ -31,6 +31,7 @@ services:
     volumes:
       - ./kafka-connect/connect-standalone.properties:/opt/kafka-connect/config/connect-standalone.properties:z,ro
       - ./kafka-connect/mqtt-source.config:/opt/kafka-connect/config/mqtt-source.config:z,ro
+      - ./kafka-connect/mqtt-source-packed.config:/opt/kafka-connect/config/mqtt-source-packed.config:z,ro
 
   mosquitto:
     container_name: mosquitto
