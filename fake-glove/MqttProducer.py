@@ -8,7 +8,7 @@ import time
 from math import floor
 
 # Global start time for all devices/files
-#change teste para eniar mensagens com um timestamp especifico
+#change teste para eniar mensagens com um timestamp especifico 
 start_time = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
 
 def get_dict_from_data(row, file_number):
@@ -63,7 +63,7 @@ def main():
 
     threads = []
 
-    for file_number in range(1, 4):
+    for file_number in range(1, 3):
         file = f"Data/sub_{file_number}.csv"
         thread = threading.Thread(target=process_file, args=(file, file_number, mqttc))
         threads.append(thread)
@@ -76,3 +76,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
