@@ -22,6 +22,7 @@ def get_dict_from_data(row, file_number):
         return None
 
     try:
+        data["ecg"] = float(row[1])
         data["bvp"] = float(row[2])
         data["gsr"] = float(row[3])
     except ValueError as e:
