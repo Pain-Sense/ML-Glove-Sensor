@@ -37,12 +37,20 @@ def process_file(file, file_number, mqttc, topic_name):
         header = next(reader, None)
         print(f"Starting to send data from {file}.")
 
+        datalist: list[dict] = []
+
         for row in reader:
             data = get_dict_from_data(row, file_number)
             if data:
-                mqttc.publish(topic_name, json.dumps(data))
-                print(f"Published: {data}")
-                time.sleep(0.1)
+                datalist.append(data)
+                # time.sleep(0.1)
+            if reader.line_num % 1000 == 0:
+                mqttc.publish(topic_name, json.dumps(datalist))
+                print(f"Published 1000 rows of data from {file_number}.")
+                datalist.clear()
+
+        mqttc.publish(topic_name, json.dumps(datalist))
+        print(f"Finished publishing data from {file_number}.")
 
 def main():
     parser = argparse.ArgumentParser()
@@ -55,7 +63,7 @@ def main():
         help="Porto do broker MQTT."
     )
     parser.add_argument(
-    '-t', '--topic', type=str, default="sensors",
+    '-t', '--topic', type=str, default="sensors_packed",
     help="Tópico de destino."
 )
 
