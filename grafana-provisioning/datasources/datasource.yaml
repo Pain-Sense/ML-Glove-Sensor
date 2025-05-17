@@ -7,7 +7,7 @@ datasources:
     type: influxdb
     access: proxy
     url: http://influxdb:8086
-    isDefault: true
+    isDefault: false
     basicAuth: true
     basicAuthUser: admin
     basicAuthPassword: admin123
@@ -37,9 +37,9 @@ datasources:
     type: grafana-mqtt-datasource
     access: proxy
     url: tcp://mosquitto:1883
-    isDefault: false
+    isDefault: true
     jsonData:
-      brokerUrl: tcp://mosquitto:1883
+      brokerUrl: "tcp://mosquitto:1883"
       topics:
         - sensors
       secure: false
