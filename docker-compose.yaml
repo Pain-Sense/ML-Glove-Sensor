@@ -71,7 +71,7 @@ services:
 
 
   grafana:
-    image: grafana/grafana:10.0.0
+    image: grafana/grafana:12.0.0
     volumes:
       - grafana-data:/var/lib/grafana:z
       - ./grafana-provisioning/:/etc/grafana/provisioning:z
