@@ -20,8 +20,12 @@ def main():
         help="Porto do broker MQTT."
     )
     parser.add_argument(
-    '-t', '--topic', type=str, default="sensors",
-    help="Tópico de destino."
+        '-t', '--topic', type=str, default="sensors",
+        help="Tópico de destino."
+    )
+    parser.add_argument(
+        '-i', '--deviceId', type=int, default=1,
+        help="Número do dispositivo."
     )
 
     args = parser.parse_args()
@@ -48,7 +52,7 @@ def main():
 
         data = {
             "timestamp": time_now.isoformat() + "Z",
-            "deviceId": 1,
+            "deviceId": args.deviceId,
             "bvp": random.random() * bvp_on,
             "gsr": random.random() * gsr_on
         }
