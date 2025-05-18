@@ -76,16 +76,19 @@ public class EventMaker {
             String message;
             if (!ecgOn.get(deviceId) && hasValidData(ecgNode)){
                 ecgOn.replace(deviceId, true);
+                ecgStopTime.replace(deviceId, null);
                 message = "ecg sensor online for device " + deviceId;
                 return objectMapper.writeValueAsString(message);
             }
             if (!bvpOn.get(deviceId) && hasValidData(bvpNode)){
                 bvpOn.replace(deviceId, true);
+                bvpStopTime.replace(deviceId, null);
                 message = "bvp sensor online for device " + deviceId;
                 return objectMapper.writeValueAsString(message);
             }
             if (!gsrOn.get(deviceId) && hasValidData(gsrNode)){
                 gsrOn.replace(deviceId, true);
+                gsrStopTime.replace(deviceId, null);
                 message = "gsr sensor online for device " + deviceId;
                 return objectMapper.writeValueAsString(message);
             }
