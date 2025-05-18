@@ -33,13 +33,13 @@ datasources:
       password: admin123
 
   - name: MQTT
-    orgId: 1
     type: grafana-mqtt-datasource
     access: proxy
-    url: tcp://mosquitto:1883
     isDefault: true
-    jsonData:
-      brokerUrl: "tcp://mosquitto:1883"
-      topics:
-        - sensors
-      secure: false
+    editable: true
+    "jsonData": {
+      "uri": "tcp://mosquitto:1883",
+      "topics": [
+        "sensors"
+      ],
+    }
