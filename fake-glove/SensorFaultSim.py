@@ -3,8 +3,10 @@
 import argparse
 import random
 import datetime
+import time
 import json
 from math import floor
+
 import paho.mqtt.client as mqtt
 
 def main():
@@ -30,27 +32,29 @@ def main():
 
     time_start = datetime.datetime.now(datetime.timezone.utc)
 
+    bvp_on = 1
+    gsr_on = 1
+
     while True:
         time_now = datetime.datetime.now(datetime.timezone.utc)
-        dt = floor((time_now - time_start).seconds)
-        print(f"dt: {dt}")
-
-        bvp_on = 1
-        gsr_on = 1
+        dt = (time_now - time_start).seconds
 
         if dt % 6 == 0:
             bvp_on = not bvp_on
         if dt % 9 == 0:
             gsr_on = not gsr_on
 
+        print(f"bvp_on: {bvp_on}, gsr_on: {gsr_on}, dt: {dt}")
+
         data = {
             "timestamp": time_now.isoformat() + "Z",
             "deviceId": 1,
-            "bvp": random.random() * gsr_on,
+            "bvp": random.random() * bvp_on,
             "gsr": random.random() * gsr_on
         }
 
         mqttc.publish(args.topic, json.dumps(data))
+        time.sleep(1)
 
 
 if __name__ == "__main__":
