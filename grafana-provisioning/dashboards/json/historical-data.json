@@ -663,6 +663,24 @@
           "type": "mysql",
           "uid": "P211906C1C32DB77E"
         },
+        "definition": "SELECT id FROM patients ORDER BY id",
+        "description": "",
+        "name": "subjectId",
+        "options": [],
+        "query": "SELECT id FROM patients ORDER BY id",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "1",
+          "value": "1"
+        },
+        "datasource": {
+          "type": "mysql",
+          "uid": "P211906C1C32DB77E"
+        },
         "definition": "SELECT id FROM devices ORDER BY id;",
         "name": "deviceId",
         "options": [],
@@ -680,11 +698,11 @@
           "type": "mysql",
           "uid": "P211906C1C32DB77E"
         },
-        "definition": "SELECT id FROM experiments ORDER BY id",
+        "definition": "SELECT id FROM experiments ORDER BY id WHERE patient_id = $patientId",
         "description": "",
         "name": "experimentId",
         "options": [],
-        "query": "SELECT id FROM experiments ORDER BY id",
+        "query": "SELECT id FROM experiments ORDER BY id WHERE patient_id = $patientId",
         "refresh": 1,
         "regex": "",
         "type": "query"
@@ -699,5 +717,5 @@
   "timezone": "browser",
   "title": "Historical data",
   "uid": "dae0e31d-8150-44f7-a661-e02885189d0b",
-  "version": 13
+  "version": 17
 }
