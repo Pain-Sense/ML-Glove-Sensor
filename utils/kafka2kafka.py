@@ -1,12 +1,21 @@
 from kafka import KafkaProducer, KafkaConsumer
 import json
+import argparse
 
-KAFKA_ADDRESS = 'localhost:9094'
 
-producer = KafkaProducer(bootstrap_servers=[KAFKA_ADDRESS])
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '-a', '--address', '--bootstrap-address',
+    type=str, default="localhost:9094",
+    help="Endereço do broker Kafka."
+)
+
+args = parser.parse_args();
+
+producer = KafkaProducer(bootstrap_servers=[args.address])
 consumer = KafkaConsumer(
     'SensorData',
-    bootstrap_servers=[KAFKA_ADDRESS],
+    bootstrap_servers=[args.address],
     auto_offset_reset='earliest',  # Start consuming from the earliest message if no offset is committed
     enable_auto_commit=True,  # Automatically commit offsets
     value_deserializer=lambda m: json.loads(m.decode('utf-8'))
