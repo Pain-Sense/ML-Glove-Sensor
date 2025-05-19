@@ -18,146 +18,20 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 3,
+  "id": 1,
   "links": [],
   "panels": [
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
+        "type": "grafana-mqtt-datasource",
+        "uid": "P51B197A508373975"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 0
-      },
-      "id": 4,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.0.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
-          },
-          "query": "from(bucket: \"bucket1\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"processed_sensor_data\")\n  |> filter(fn: (r) => r.deviceId == \"${deviceId}\")\n  |> filter(fn: (r) => r._field == \"gsr\")\n  |> filter(fn: (r) =>\n      if \"${experimentId}\" == \"\" then true else r.experimentId == \"${experimentId}\"\n  )\n  |> aggregateWindow(every: 1s, fn: mean)\n  |> yield(name: \"mean\")\n",
-          "refId": "A"
-        }
-      ],
-      "title": "Galvanic Skin Response (GSR)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
-      },
-      "description": "This panel allows you to see the correlation between bvp, ecg, and gsr on the same time axis.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
+          "fieldMinMax": false,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -174,50 +48,170 @@
         },
         "overrides": [
           {
+            "__systemRef": "hideSeriesFrom",
             "matcher": {
-              "id": "byName",
-              "options": "bvp"
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "ecg"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
             },
-            "properties": [
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "f6e6f27e-3b57-4fee-9abf-4cce8f091b5b"
+          },
+          "refId": "A",
+          "topic": "sensors"
+        }
+      ],
+      "title": "ECG",
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
               {
-                "id": "custom.axisPlacement",
-                "value": "left"
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "${deviceId}"
+                  }
+                },
+                "fieldName": "deviceId"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "ecg"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "P51B197A508373975"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
               },
               {
-                "id": "custom.lineWidth",
-                "value": 2
+                "color": "red",
+                "value": 80
               }
             ]
-          },
+          }
+        },
+        "overrides": [
           {
+            "__systemRef": "hideSeriesFrom",
             "matcher": {
-              "id": "byName",
-              "options": "ecg"
-            },
-            "properties": [
-              {
-                "id": "custom.axisPlacement",
-                "value": "right"
-              },
-              {
-                "id": "custom.lineWidth",
-                "value": 2
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "ecg"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
               }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "gsr"
             },
             "properties": [
               {
-                "id": "custom.axisPlacement",
-                "value": "right"
-              },
-              {
-                "id": "custom.lineWidth",
-                "value": 2
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": false,
+                  "viz": true
+                }
               }
             ]
           }
@@ -229,21 +223,18 @@
         "x": 12,
         "y": 0
       },
-      "id": 6,
+      "id": 1,
+      "maxDataPoints": 2000,
       "options": {
         "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "lastNotNull"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
           "hideZeros": false,
-          "mode": "multi",
+          "mode": "single",
           "sort": "none"
         }
       },
@@ -251,60 +242,47 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "type": "grafana-mqtt-datasource",
+            "uid": "f6e6f27e-3b57-4fee-9abf-4cce8f091b5b"
           },
-          "query": "from(bucket: \"bucket1\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"processed_sensor_data\")\n  |> filter(fn: (r) => r.deviceId == \"${deviceId}\")\n  |> filter(fn: (r) =>\n      if \"${experimentId}\" == \"\" then true else r.experimentId == \"${experimentId}\"\n  )\n  |> filter(fn: (r) => r._field == \"bvp\" or r._field == \"ecg\" or r._field == \"gsr\")\n  |> aggregateWindow(every: 1s, fn: mean)\n  |> yield(name: \"mean\")\n",
-          "refId": "A"
+          "refId": "A",
+          "topic": "sensors"
         }
       ],
-      "title": "Correlation Analysis (BVP, ECG, GSR)",
-      "transparent": true,
+      "title": "ECG Signal",
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "${deviceId}"
+                  }
+                },
+                "fieldName": "deviceId"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        }
+      ],
       "type": "timeseries"
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
+        "type": "grafana-mqtt-datasource",
+        "uid": "P51B197A508373975"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
+          "fieldMinMax": false,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -319,7 +297,23 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "ecg"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": []
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -327,38 +321,72 @@
         "x": 0,
         "y": 8
       },
-      "id": 3,
+      "id": 5,
       "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
         },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
       "pluginVersion": "12.0.0",
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "type": "grafana-mqtt-datasource",
+            "uid": "f6e6f27e-3b57-4fee-9abf-4cce8f091b5b"
           },
-          "query": "from(bucket: \"bucket1\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"processed_sensor_data\")\n  |> filter(fn: (r) => r.deviceId == \"${deviceId}\")\n  |> filter(fn: (r) => r._field == \"ecg\")\n  |> filter(fn: (r) =>\n      if \"${experimentId}\" == \"\" then true else r.experimentId == \"${experimentId}\"\n  )\n  |> aggregateWindow(every: 1s, fn: mean)\n  |> yield(name: \"mean\")\n",
-          "refId": "A"
+          "refId": "A",
+          "topic": "sensors"
         }
       ],
-      "title": "Electrocardiogram (ECG)",
-      "type": "timeseries"
+      "title": "BVP",
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "${deviceId}"
+                  }
+                },
+                "fieldName": "deviceId"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "bvp"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "stat"
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
+        "type": "grafana-mqtt-datasource",
+        "uid": "P51B197A508373975"
       },
       "fieldConfig": {
         "defaults": {
@@ -398,6 +426,7 @@
               "mode": "off"
             }
           },
+          "fieldMinMax": false,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -412,15 +441,41 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "bvp"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 0,
-        "y": 16
+        "x": 12,
+        "y": 8
       },
-      "id": 2,
+      "id": 4,
+      "maxDataPoints": 2000,
       "options": {
         "legend": {
           "calcs": [],
@@ -438,18 +493,290 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "type": "grafana-mqtt-datasource",
+            "uid": "f6e6f27e-3b57-4fee-9abf-4cce8f091b5b"
           },
-          "query": "from(bucket: \"bucket1\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"processed_sensor_data\")\n  |> filter(fn: (r) => r.deviceId == \"${deviceId}\")\n  |> filter(fn: (r) => r._field == \"bvp\")\n  |> filter(fn: (r) =>\n      if \"${experimentId}\" == \"\" then true else r.experimentId == \"${experimentId}\"\n  )\n  |> aggregateWindow(every: 1s, fn: mean)\n  |> yield(name: \"mean\")\n",
-          "refId": "A"
+          "refId": "A",
+          "topic": "sensors"
         }
       ],
-      "title": "Blood Volume Pulse (BVP)",
+      "title": "BVP Signal",
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "${deviceId}"
+                  }
+                },
+                "fieldName": "deviceId"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "P51B197A508373975"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "ecg"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "f6e6f27e-3b57-4fee-9abf-4cce8f091b5b"
+          },
+          "refId": "A",
+          "topic": "sensors"
+        }
+      ],
+      "title": "GSR",
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "${deviceId}"
+                  }
+                },
+                "fieldName": "deviceId"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "gsr"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "P51B197A508373975"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "gsr"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 6,
+      "maxDataPoints": 2000,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "f6e6f27e-3b57-4fee-9abf-4cce8f091b5b"
+          },
+          "refId": "A",
+          "topic": "sensors"
+        }
+      ],
+      "title": "GSR Signal",
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "${deviceId}"
+                  }
+                },
+                "fieldName": "deviceId"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        }
+      ],
       "type": "timeseries"
     }
   ],
   "preload": false,
+  "refresh": "",
   "schemaVersion": 41,
   "tags": [],
   "templating": {
@@ -463,47 +790,11 @@
           "type": "mysql",
           "uid": "P211906C1C32DB77E"
         },
-        "definition": "SELECT id FROM patients ORDER BY id",
+        "definition": "SELECT id AS value FROM devices ORDER BY id;\n",
         "description": "",
-        "name": "subjectId",
-        "options": [],
-        "query": "SELECT id FROM patients ORDER BY id",
-        "refresh": 1,
-        "regex": "",
-        "type": "query"
-      },
-      {
-        "current": {
-          "text": "1",
-          "value": "1"
-        },
-        "datasource": {
-          "type": "mysql",
-          "uid": "P211906C1C32DB77E"
-        },
-        "definition": "SELECT id FROM devices ORDER BY id;",
         "name": "deviceId",
         "options": [],
-        "query": "SELECT id FROM devices ORDER BY id;",
-        "refresh": 1,
-        "regex": "",
-        "type": "query"
-      },
-      {
-        "allowCustomValue": true,
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "datasource": {
-          "type": "mysql",
-          "uid": "P211906C1C32DB77E"
-        },
-        "definition": "SELECT id FROM experiments WHERE patient_id = $subjectId ORDER BY id",
-        "description": "",
-        "name": "experimentId",
-        "options": [],
-        "query": "SELECT id FROM experiments WHERE patient_id = $subjectId ORDER BY id",
+        "query": "SELECT id AS value FROM devices ORDER BY id;\n",
         "refresh": 1,
         "regex": "",
         "type": "query"
@@ -511,12 +802,16 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-5m",
     "to": "now"
   },
-  "timepicker": {},
-  "timezone": "browser",
-  "title": "Historical data",
-  "uid": "dae0e31d-8150-44f7-a661-e02885189d0b",
+  "timepicker": {
+    "refresh_intervals": [
+      "1m"
+    ]
+  },
+  "timezone": "",
+  "title": "IoT",
+  "uid": "d4ebeaef-38b9-48e3-9d38-7d80cfeb9260",
   "version": 1
 }
