@@ -71,7 +71,7 @@ public class EventMaker {
                 message = checkSensors("gsr", gsrNode, gsrStopTime, gsrOn, deviceId, currentTimestamp);
             }
             if (message.equals("")){
-                message = "no event for device " + deviceId;
+                return null;
             } else {
                 events.add(message);
             }
