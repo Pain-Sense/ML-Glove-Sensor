@@ -176,7 +176,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "bvp {deviceId=\"1\", host=\"a4c1be599094\"}"
+              "options": "bvp"
             },
             "properties": [
               {
@@ -192,7 +192,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "ecg {deviceId=\"1\", host=\"a4c1be599094\"}"
+              "options": "ecg"
             },
             "properties": [
               {
@@ -208,7 +208,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "gsr {deviceId=\"1\", host=\"a4c1be599094\"}"
+              "options": "gsr"
             },
             "properties": [
               {
@@ -609,5 +609,5 @@
   "timezone": "browser",
   "title": "Historical data",
   "uid": "dae0e31d-8150-44f7-a661-e02885189d0b",
-  "version": 5
+  "version": 13
 }
