@@ -11,7 +11,8 @@ export function EventNotifications() {
                 toast(res)
             }
         }
-        processEvents()
+        const intervalId = setInterval(processEvents, 3000)
+        return () => clearInterval(intervalId)
     },[])
 
     return <ToastContainer/>
