@@ -22,7 +22,6 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_NUM_PARTITIONS: 3
 
-
   kafka-connect:
     build:
       context: ./kafka-connect
@@ -40,6 +39,12 @@ services:
       - ./mosquitto/mosquitto-no-auth.conf:/mosquitto/config/mosquitto.conf:z,ro
     ports:
       - 1883:1883
+
+  processing_k2k:
+    build:
+      context: ./processing/kafka2kafka
+      dockerfile: Dockerfile
+
 
   influxdb:
     container_name: influxdb
