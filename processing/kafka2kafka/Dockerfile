@@ -12,6 +12,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code
 COPY kafka2kafka.py .
 
+# A script to make us wait until Kafka is ready.
+COPY wait-for-it.sh .
+RUN chmod +x ./wait-for-it.sh
+
 # Default command to run your producer script
-ENTRYPOINT ["python", "kafka2kafka.py"]
-CMD ["-a", "kafka:9092"]
+ENTRYPOINT ["./wait-for-it.sh", "-t", "60", "-s", "kafka:9092", "--", "python", "kafka2kafka.py", "-a", "kafka:9092"]

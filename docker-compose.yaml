@@ -44,6 +44,8 @@ services:
     build:
       context: ./processing/kafka2kafka
       dockerfile: Dockerfile
+    depends_on:
+      - kafka
 
 
   influxdb:
