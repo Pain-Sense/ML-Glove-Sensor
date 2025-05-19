@@ -107,7 +107,7 @@
             "type": "influxdb",
             "uid": "P951FEA4DE68E13C5"
           },
-          "query": "from(bucket: \"bucket1\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"processed_sensor_data\")\n  |> filter(fn: (r) => r[\"deviceId\"] == \"${deviceId}\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"bucket1\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"processed_sensor_data\")\n  |> filter(fn: (r) =>\n      if \"${deviceId}\" == \"\" then true else r.deviceId == \"${deviceId}\"\n  )\n  |> filter(fn: (r) =>\n      if \"${experimentId}\" == \"\" then true else r.experimentId == \"${experimentId}\"\n  )\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -147,5 +147,5 @@
   "timezone": "browser",
   "title": "Historical data",
   "uid": "dae0e31d-8150-44f7-a661-e02885189d0b",
-  "version": 4
+  "version": 5
 }
