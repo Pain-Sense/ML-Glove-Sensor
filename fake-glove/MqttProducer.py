@@ -3,6 +3,7 @@ import argparse
 import csv
 import json
 import threading
+import signal
 import datetime
 import time
 from math import floor
@@ -10,6 +11,9 @@ from math import floor
 # Global start time for all devices/files
 #change teste para eniar mensagens com um timestamp especifico 
 start_time = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+
+# Shared signal to stop threads
+stop_event = threading.Event()
 
 def get_dict_from_data(row, file_number):
     data = {}
@@ -39,6 +43,9 @@ def process_file(file, file_number, mqttc):
         print(f"Starting to send data from {file}.")
 
         for row in reader:
+            if stop_event.is_set():
+                break
+
             data = get_dict_from_data(row, file_number)
             if data:
                 mqttc.publish("sensors", json.dumps(data))
@@ -70,11 +77,20 @@ def main():
         threads.append(thread)
         thread.start()
 
+    try:
+        while not stop_event.is_set():
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        print("\nCtrl+C received. Stopping threads...")
+        stop_event.set()
+    else:
+        print("All data has been sent.")
+
+    # Wait for all threads to finish
     for thread in threads:
         thread.join()
 
-    print("All data has been sent.")
+    print("Exiting.")
 
 if __name__ == "__main__":
     main()
-    
