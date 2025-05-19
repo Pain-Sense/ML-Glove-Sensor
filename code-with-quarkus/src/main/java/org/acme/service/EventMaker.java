@@ -28,6 +28,12 @@ public class EventMaker {
     private HashMap<Long, Boolean> bvpOn = new HashMap<>();
     private HashMap<Long, Boolean> gsrOn = new HashMap<>();
 
+    private enum EventType {
+        NULL,
+        SENSOR_OFF,
+        SENSOR_ON
+    }
+
     @Incoming("SensorData")
     @Outgoing("Events")
     public String enrich(String rawMessage) {
@@ -88,7 +94,7 @@ public class EventMaker {
     }
 
     private static String checkSensors(String sensorType, JsonNode node, HashMap<Long, LocalDateTime> stopTimeMap, HashMap<Long, Boolean> onOffMap, Long deviceId, LocalDateTime currentTimestamp){
-        String message = "";
+        EventType eventType = EventType.NULL;
         if(hasValidData(node)){
             if (stopTimeMap.get(deviceId) != null){
                 stopTimeMap.replace(deviceId, null);
@@ -96,7 +102,7 @@ public class EventMaker {
             // If offline sensor comes back online, create event
             if (!onOffMap.get(deviceId)){
                 onOffMap.replace(deviceId, true);
-                message = sensorType + " sensor online for device " + deviceId;
+                eventType = EventType.SENSOR_ON;
             }
         } else {
             // If sensor stops store current timestamp
@@ -106,10 +112,18 @@ public class EventMaker {
             // If sensor remains stopped for 5 seconds create event
             if (onOffMap.get(deviceId) && stopTimeMap.get(deviceId).isBefore(currentTimestamp.minusSeconds(5))){
                 onOffMap.replace(deviceId, false);
-                message = sensorType + " sensor offline for device " + deviceId;
+                eventType = EventType.SENSOR_OFF;
             }
         }
-        return message;
+
+        if (eventType != EventType.NULL) {
+            return String.format(
+                "{\"timestamp\": %s, \"deviceId\": %d, \"sensorType\": \"%s\", \"sensorOn\": %b}",
+                currentTimestamp.toString(), deviceId, sensorType, (eventType == EventType.SENSOR_ON)
+            );
+        } else {
+            return "";
+        }
     }
 
     public String getEvent(){
