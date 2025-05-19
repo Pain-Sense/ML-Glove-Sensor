@@ -118,7 +118,7 @@ public class EventMaker {
 
         if (eventType != EventType.NULL) {
             return String.format(
-                "{\"timestamp\": \"%s\", \"deviceId\": %d, \"sensorType\": \"%s\", \"sensorOn\": %b}",
+                "{\"timestamp\": \"%s\", \"deviceId\": \"%d\", \"sensorType\": \"%s\", \"sensorOn\": %b}",
                 currentTimestamp.toString(), deviceId, sensorType, (eventType == EventType.SENSOR_ON)
             );
         } else {
