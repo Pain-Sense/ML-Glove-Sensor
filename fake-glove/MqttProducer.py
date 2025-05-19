@@ -43,7 +43,7 @@ def process_file(file, file_number, mqttc):
             if data:
                 mqttc.publish("sensors", json.dumps(data))
                 print(f"Published: {data}")
-                time.sleep(0.001)
+                time.sleep(0.005)
 
 def main():
     parser = argparse.ArgumentParser()
