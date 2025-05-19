@@ -6,11 +6,9 @@ export function EventNotifications() {
     useEffect(() => {
         const processEvents = async () => {
             const response = await fetch('http://localhost:8089/events')
-            const res = await response.json()
-            if (res.event === 'off'){
-                toast(`${res.sensor} offline for device ${res.deviceId}`)
-            } else if (res.event === 'on'){
-                toast(`${res.sensor} online for device ${res.deviceId}`)
+            const res = await response.text()
+            if (res !== 'no event'){
+                toast(res)
             }
         }
         processEvents()
