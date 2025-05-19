@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { GrafanaDashboards } from '../components/GrafanaDashboards'
 
 export default function LiveMonitoring() {
   const { experimentId } = useParams({
@@ -96,8 +97,8 @@ export default function LiveMonitoring() {
               <CardTitle>Data</CardTitle>
             </CardHeader>
             <CardContent>
-              {!isPaused &&
-                <iframe src='http://localhost:3000/d-solo/d4ebeaef-38b9-48e3-9d38-7d80cfeb9260/iot?orgId=1&from=1747666147577&to=1747666447577&timezone=browser&var-deviceId=1&panelId=2&__feature.dashboardSceneSolo' sandbox='allow-scrips allow-same-origin' width='450' height='200' frameBorder='0'></iframe>
+              {!isPaused && experimentInfo &&
+                <GrafanaDashboards deviceId={experimentInfo.deviceId}></GrafanaDashboards>
               }
             </CardContent>
           </Card>
