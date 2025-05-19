@@ -224,7 +224,7 @@
         "y": 0
       },
       "id": 1,
-      "maxDataPoints": 2000,
+      "maxDataPoints": 100000,
       "options": {
         "legend": {
           "calcs": [],
@@ -475,7 +475,7 @@
         "y": 8
       },
       "id": 4,
-      "maxDataPoints": 2000,
+      "maxDataPoints": 100000,
       "options": {
         "legend": {
           "calcs": [],
@@ -726,7 +726,7 @@
         "y": 16
       },
       "id": 6,
-      "maxDataPoints": 2000,
+      "maxDataPoints": 100000,
       "options": {
         "legend": {
           "calcs": [],
@@ -813,5 +813,5 @@
   "timezone": "",
   "title": "IoT",
   "uid": "d4ebeaef-38b9-48e3-9d38-7d80cfeb9260",
-  "version": 1
+  "version": 2
 }
