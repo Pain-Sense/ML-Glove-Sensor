@@ -118,7 +118,7 @@ public class EventMaker {
 
         if (eventType != EventType.NULL) {
             return String.format(
-                "{\"timestamp\": %s, \"deviceId\": %d, \"sensorType\": \"%s\", \"sensorOn\": %b}",
+                "{\"timestamp\": \"%s\", \"deviceId\": %d, \"sensorType\": \"%s\", \"sensorOn\": %b}",
                 currentTimestamp.toString(), deviceId, sensorType, (eventType == EventType.SENSOR_ON)
             );
         } else {
@@ -130,6 +130,6 @@ public class EventMaker {
         if (events.size() > 0){
             return events.remove(0);
         }
-        return "no event";
+        return "{}";
     }
 }
