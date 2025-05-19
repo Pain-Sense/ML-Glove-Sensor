@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
@@ -16,6 +18,7 @@ public class EventMaker {
    
     private static final Logger LOG = Logger.getLogger(SensorDataEnricher.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final List<String> events = new ArrayList<>();
 
     private HashMap<Long,LocalDateTime> ecgStopTime = new HashMap<>();
     private HashMap<Long,LocalDateTime> bvpStopTime = new HashMap<>();
@@ -69,6 +72,8 @@ public class EventMaker {
             }
             if (message.equals("")){
                 message = "no event for device " + deviceId;
+            } else {
+                events.add(message);
             }
             
             return objectMapper.writeValueAsString(message);
@@ -105,5 +110,12 @@ public class EventMaker {
             }
         }
         return message;
+    }
+
+    public String getEvent(){
+        if (events.size() > 0){
+            return events.remove(0);
+        }
+        return "no event";
     }
 }
