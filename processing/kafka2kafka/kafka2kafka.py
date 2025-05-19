@@ -12,18 +12,21 @@ parser.add_argument(
 
 args = parser.parse_args();
 
-producer = KafkaProducer(bootstrap_servers=[args.address])
-consumer = KafkaConsumer(
-    'SensorData',
-    bootstrap_servers=[args.address],
-    auto_offset_reset='earliest',  # Start consuming from the earliest message if no offset is committed
-    enable_auto_commit=True,  # Automatically commit offsets
-    value_deserializer=lambda m: json.loads(m.decode('utf-8'))
-)
+try:
+    producer = KafkaProducer(bootstrap_servers=[args.address])
+    consumer = KafkaConsumer(
+        'SensorData',
+        bootstrap_servers=[args.address],
+        auto_offset_reset='earliest',  # Start consuming from the earliest message if no offset is committed
+        enable_auto_commit=True,  # Automatically commit offsets
+        value_deserializer=lambda m: json.loads(m.decode('utf-8'))
+    )
 
-# print(f"bootstrap_connected: {consumer.bootstrap_connected()}")
+    # print(f"bootstrap_connected: {consumer.bootstrap_connected()}")
 
-while True:
-    for message in consumer:
-        data: dict = message.value
-        producer.send("hrData", json.dumps(data).encode('utf-8'))
+    while True:
+        for message in consumer:
+            data: dict = message.value
+            producer.send("hrData", json.dumps(data).encode('utf-8'))
+except KeyboardInterrupt:
+    print("Received keyboard interrupt; exiting.")
