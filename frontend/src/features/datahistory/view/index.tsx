@@ -5,15 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { MetricCards } from './components/MetricsCards'
+import Dashboards from './components/Dashboards'
 
 export default function DataHistoryView() {
   const { experimentId } = useParams({
     from: '/_authenticated/data-history/$experimentId',
   })
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [metrics, setMetrics] = useState<any[]>([])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [experimentInfo, setExperimentInfo] = useState<any | null>(null)
@@ -34,22 +31,6 @@ export default function DataHistoryView() {
     fetchExperimentInfo()
   }, [experimentId])
 
-  useEffect(() => {
-    const fetchMetrics = async () => {
-      try {
-        const res = await fetch(
-          `http://localhost:8089/experiments/${experimentId}/history`
-        )
-        const data = await res.json()
-        setMetrics(data)
-      } catch {
-        toast.error('Failed to fetch metrics')
-      }
-    }
-
-    fetchMetrics()
-  }, [experimentId])
-
   return (
     <>
       <Header>
@@ -63,7 +44,7 @@ export default function DataHistoryView() {
           <h1 className='text-2xl font-bold tracking-tight'>Data history</h1>
         </div>
 
-        <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
+        <div className='flex flex-col gap-4'>
           <Card className='md:col-span-1'>
             <CardHeader>
               <CardTitle>Session Info</CardTitle>
@@ -94,7 +75,7 @@ export default function DataHistoryView() {
               <CardTitle>Data</CardTitle>
             </CardHeader>
             <CardContent>
-              <MetricCards data={metrics} />
+              <Dashboards patientId={experimentInfo?.patientId} deviceId={experimentInfo?.deviceId} experimentId={experimentId} />
             </CardContent>
           </Card>
         </div>
