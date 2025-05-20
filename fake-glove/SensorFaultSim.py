@@ -34,13 +34,13 @@ def main():
     mqttc.connect(args.addr, args.port)
     mqttc.loop_start()
 
-    time_start = datetime.datetime.now(datetime.timezone.utc)
+    time_start = datetime.datetime.now(None)
 
     bvp_on = 1
     gsr_on = 1
 
     while True:
-        time_now = datetime.datetime.now(datetime.timezone.utc)
+        time_now = datetime.datetime.now(None) - datetime.timedelta(hours=1)
         dt = (time_now - time_start).seconds
 
         if dt % 6 == 0:
