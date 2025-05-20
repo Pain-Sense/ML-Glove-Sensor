@@ -15,10 +15,9 @@ import org.jboss.logging.Logger;
 
 @ApplicationScoped
 public class EventMaker {
-   
     private static final Logger LOG = Logger.getLogger(SensorDataEnricher.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final List<String> events = new ArrayList<>();
+    private final List<SensorEvent> events = new ArrayList<>();
 
     private HashMap<Long,LocalDateTime> ecgStopTime = new HashMap<>();
     private HashMap<Long,LocalDateTime> bvpStopTime = new HashMap<>();
@@ -28,6 +27,20 @@ public class EventMaker {
     private HashMap<Long, Boolean> bvpOn = new HashMap<>();
     private HashMap<Long, Boolean> gsrOn = new HashMap<>();
 
+    public class SensorEvent {
+        public String timestamp;
+        public long deviceId;
+        public String sensorType;
+        public boolean sensorOn;
+
+        public SensorEvent(String timestamp, long deviceId, String sensorType, boolean sensorOn) {
+            this.timestamp = timestamp;
+            this.deviceId = deviceId;
+            this.sensorType = sensorType;
+            this.sensorOn = sensorOn;
+        }
+    }
+
     private enum EventType {
         NULL,
         SENSOR_OFF,
@@ -36,7 +49,7 @@ public class EventMaker {
 
     @Incoming("SensorData")
     @Outgoing("Events")
-    public String enrich(String rawMessage) {
+    public SensorEvent enrich(String rawMessage) {
         try {
             JsonNode root = objectMapper.readTree(rawMessage);
 
@@ -69,23 +82,23 @@ public class EventMaker {
             LocalDateTime currentTimestamp = LocalDateTime.now();
 
             // Can only create events for one sensor at a time to prevent message overriding
-            String message = checkSensors("ecg", ecgNode, ecgStopTime, ecgOn, deviceId, currentTimestamp);
-            if (message.equals("")){
-                message = checkSensors("bvp", bvpNode, bvpStopTime, bvpOn, deviceId, currentTimestamp);
+            SensorEvent event = checkSensors("ecg", ecgNode, ecgStopTime, ecgOn, deviceId, currentTimestamp);
+            if (event == null){
+                event = checkSensors("bvp", bvpNode, bvpStopTime, bvpOn, deviceId, currentTimestamp);
             }
-            if (message.equals("")){
-                message = checkSensors("gsr", gsrNode, gsrStopTime, gsrOn, deviceId, currentTimestamp);
+            if (event == null){
+                event = checkSensors("gsr", gsrNode, gsrStopTime, gsrOn, deviceId, currentTimestamp);
             }
-            if (message.equals("")){
+            if (event == null){
                 return null;
             } else {
-                events.add(message);
+                events.add(event);
             }
             
-            return objectMapper.writeValueAsString(message);
+            return event;
         } catch (Exception e) {
             LOG.error("Failed to enrich message: " + rawMessage, e);
-            return rawMessage; // Return the original message in case of error
+            return null;
         }
     }
 
@@ -93,7 +106,7 @@ public class EventMaker {
         return node != null && node.isNumber() && node.asDouble() != 0;
     }
 
-    private static String checkSensors(String sensorType, JsonNode node, HashMap<Long, LocalDateTime> stopTimeMap, HashMap<Long, Boolean> onOffMap, Long deviceId, LocalDateTime currentTimestamp){
+    private SensorEvent checkSensors(String sensorType, JsonNode node, HashMap<Long, LocalDateTime> stopTimeMap, HashMap<Long, Boolean> onOffMap, Long deviceId, LocalDateTime currentTimestamp){
         EventType eventType = EventType.NULL;
         if(hasValidData(node)){
             if (stopTimeMap.get(deviceId) != null){
@@ -117,19 +130,19 @@ public class EventMaker {
         }
 
         if (eventType != EventType.NULL) {
-            return String.format(
-                "{\"timestamp\": \"%s\", \"deviceId\": \"%d\", \"sensorType\": \"%s\", \"sensorOn\": %b}",
-                currentTimestamp.toString(), deviceId, sensorType, (eventType == EventType.SENSOR_ON)
+            return new SensorEvent(
+                currentTimestamp.minusHours(1).toString(),
+                deviceId, sensorType, (eventType == EventType.SENSOR_ON)
             );
         } else {
-            return "";
+            return null;
         }
     }
 
-    public String getEvent(){
+    public SensorEvent getEvent(){
         if (events.size() > 0){
             return events.remove(0);
         }
-        return "{}";
+        return null;
     }
 }

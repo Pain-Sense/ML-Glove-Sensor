@@ -16,7 +16,7 @@ public class EventResource {
 
     @GET
     @RestStreamElementType(MediaType.TEXT_PLAIN)
-    public String getEvent(){
+    public EventMaker.SensorEvent getEvent(){
         return eventMaker.getEvent();
     }
 }
