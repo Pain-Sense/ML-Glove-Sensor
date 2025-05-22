@@ -99,11 +99,20 @@ services:
       - kafka
       - influxdb
     volumes:
+      - ./wait-for-it.sh:/wait-for-it.sh:ro,z
       - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     environment:
       - HOST_PROC=/rootfs/proc
       - HOST_SYS=/rootfs/sys
       - HOST_ETC=/rootfs/etc
+    entrypoint:
+      - /wait-for-it.sh
+      - --timeout=60
+      - --strict
+      - kafka:9092
+      - --
+      - /entrypoint.sh
+      - telegraf
     ports:
       - "8125:8125/udp"
       - "8092:8092/udp"
