@@ -111,6 +111,11 @@ services:
       - --strict
       - kafka:9092
       - --
+      - /wait-for-it.sh
+      - --timeout=60
+      - --strict
+      - influxdb:8086
+      - --
       - /entrypoint.sh
       - telegraf
     ports:
