@@ -97,5 +97,8 @@ USER 185
 ENV JAVA_OPTS_APPEND="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
 
-ENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]
+# We use this script to wait for other services to be ready.
+COPY wait-for-it.sh .
 
+# Wait for MySQL, then wait for Kafka, and then start.
+ENTRYPOINT [ "./wait-for-it.sh", "-t", "60", "-s", "mysql:3306", "--", "./wait-for-it.sh", "-t", "60", "-s", "kafka:9092", "--", "/opt/jboss/container/java/run/run-java.sh" ]

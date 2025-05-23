@@ -111,6 +111,11 @@ services:
       - --strict
       - kafka:9092
       - --
+      - /wait-for-it.sh
+      - --timeout=60
+      - --strict
+      - influxdb:8086
+      - --
       - /entrypoint.sh
       - telegraf
     ports:
@@ -130,6 +135,7 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     depends_on:
       - kafka
+      - mysql
     restart: unless-stopped
 
   fake-glove-producer:
@@ -138,6 +144,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - mosquitto
+      - kafka-connect
     restart: unless-stopped
 
 

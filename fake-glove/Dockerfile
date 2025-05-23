@@ -15,6 +15,9 @@ COPY *.py .
 # Copy the dataset.
 COPY ./Data Data
 
+COPY wait-for-it.sh .
+RUN chmod +x ./wait-for-it.sh
+
 # Default command to run your producer script
-ENTRYPOINT ["python", "MqttProducer.py"]
+ENTRYPOINT ["./wait-for-it.sh", "-s", "mosquitto:1883", "--", "python", "MqttProducer.py"]
 CMD ["-a", "mosquitto"]
