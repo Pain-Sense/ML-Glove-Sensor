@@ -3,7 +3,7 @@ import { useParams } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ThemeSwitch } from '@/components/theme-switch'
@@ -20,6 +20,7 @@ export default function LiveMonitoring() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [experimentInfo, setExperimentInfo] = useState<any | null>(null)
+  const [sensorStatus, setSensorStatus] = useState<any | null>(null)
 
   useEffect(() => {
     const fetchExperimentInfo = async () => {
@@ -36,6 +37,20 @@ export default function LiveMonitoring() {
 
     fetchExperimentInfo()
   }, [experimentId])
+
+  useEffect(() => {
+    const fetchSensorData = async () => {
+      if (experimentInfo){
+        const res = await fetch(`http://localhost:8089/events/${experimentInfo.deviceId}`)
+        if (res.ok){
+          const data = await res.json()
+          setSensorStatus(data)
+        }
+      }
+    }
+    const intervalId = setInterval(fetchSensorData, 1500)
+    return () => clearInterval(intervalId)
+  })
 
   const handleStop = async () => {
     try {
@@ -90,6 +105,19 @@ export default function LiveMonitoring() {
                 {experimentInfo?.deviceId || 'N/A'}
               </p>
             </CardContent>
+            {sensorStatus && !isPaused &&
+              <CardFooter>
+                <p>
+                  ECG sensor: {sensorStatus.ecg ? 'on' : 'off'}
+                </p>
+                <p>
+                  BVP sensor: {sensorStatus.bvp ? 'on' : 'off'}
+                </p>
+                <p>
+                  GSR sensor: {sensorStatus.gsr ? 'on' : 'off'}
+                </p>
+              </CardFooter>
+            }
           </Card>
 
           <Card className='md:col-span-2'>
