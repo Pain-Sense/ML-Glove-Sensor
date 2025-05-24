@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
@@ -117,5 +118,16 @@ public class EventMaker {
             return events.remove(0);
         }
         return "no event";
+    }
+
+    public Map<String, Boolean> getSensorStatus(Long id){
+        Map<String, Boolean> sensorStatus = new HashMap<>();
+        sensorStatus.put("ecg", ecgOn.get(id));
+        sensorStatus.put("bvp", bvpOn.get(id));
+        sensorStatus.put("gsr", gsrOn.get(id));
+        if (sensorStatus.containsValue(null)){
+            return null;
+        }
+        return sensorStatus;
     }
 }
