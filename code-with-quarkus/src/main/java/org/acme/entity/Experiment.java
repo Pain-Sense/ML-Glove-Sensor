@@ -12,6 +12,8 @@ public class Experiment {
     public String name;
     public String notes;
 
+    public boolean stopped = false;
+
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     public Patient patient;

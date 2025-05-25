@@ -38,19 +38,15 @@ public class PatientResource {
 
     @POST
     @Transactional
-    public Response createOrUpdate(PatientDTO dto) {
-        Patient patient = em.find(Patient.class, dto.id);
-        if (patient == null) {
-            patient = new Patient();
-            patient.id = dto.id;
-        }
+    public Response create(PatientDTO dto) {
+        Patient patient = new Patient();
         patient.name = dto.name;
         patient.age = dto.age;
         patient.gender = dto.gender;
         patient.health_condition = dto.health_condition;
 
-        em.merge(patient);
-        return Response.ok(toDTO(patient)).build();
+        em.persist(patient);
+        return Response.status(Response.Status.CREATED).entity(toDTO(patient)).build();
     }
 
     private PatientDTO toDTO(Patient p) {

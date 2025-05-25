@@ -28,7 +28,7 @@ public class InfluxService {
     @ConfigProperty(name = "influx.bucket")
     String influxBucket;
 
-    private String measurement = "ProcessedSensorData";
+    private String measurement = "processed_sensor_data";
 
     private InfluxDBClient client;
 
@@ -43,6 +43,32 @@ public class InfluxService {
             |> range(start: %s, stop: %s)
             |> filter(fn: (r) => r._measurement == "%s" and r.experimentId == "%d")
       """, influxBucket, start, stop, measurement, experimentId);
+
+        QueryApi queryApi = client.getQueryApi();
+        List<FluxTable> tables = queryApi.query(flux);
+        List<Map<String, Object>> results = new ArrayList<>();
+
+        for (FluxTable table : tables) {
+            for (FluxRecord record : table.getRecords()) {
+                Map<String, Object> entry = new HashMap<>();
+                entry.put("field", record.getField());
+                entry.put("value", record.getValue());
+                entry.put("time", record.getTime());
+                entry.put("deviceId", record.getValueByKey("deviceId"));
+                entry.put("experimentId", record.getValueByKey("experimentId"));
+                results.add(entry);
+            }
+        }
+
+        return results;
+    }
+
+    public List<Map<String, Object>> queryHistory(Long experimentId, String start) {
+      String flux = String.format("""
+          from(bucket: "%s")
+            |> range(start: %s)
+            |> filter(fn: (r) => r._measurement == "%s" and r.experimentId == "%d")
+      """, influxBucket, start, measurement, experimentId);
 
         QueryApi queryApi = client.getQueryApi();
         List<FluxTable> tables = queryApi.query(flux);
