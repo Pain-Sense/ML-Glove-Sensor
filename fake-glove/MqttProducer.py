@@ -32,7 +32,7 @@ def get_dict_from_data(row, file_number):
     data["deviceId"] = file_number
     return data
 
-def process_file(file, file_number, mqttc, topic_name):
+def process_file(file, file_number, mqttc):
     with open(file, 'r') as f:
         reader = csv.reader(f)
         header = next(reader, None)
@@ -41,7 +41,7 @@ def process_file(file, file_number, mqttc, topic_name):
         for row in reader:
             data = get_dict_from_data(row, file_number)
             if data:
-                mqttc.publish(topic_name, json.dumps(data))
+                mqttc.publish("sensors", json.dumps(data))
                 print(f"Published: {data}")
                 time.sleep(0.005)
 
@@ -55,10 +55,6 @@ def main():
         '-p', '--port', type=int, default=1883,
         help="Porto do broker MQTT."
     )
-    parser.add_argument(
-    '-t', '--topic', type=str, default="sensors",
-    help="Tópico de destino."
-)
 
     args = parser.parse_args()
 
@@ -70,7 +66,7 @@ def main():
 
     for file_number in range(1, 3):
         file = f"Data/sub_{file_number}.csv"
-        thread = threading.Thread(target=process_file, args=(file, file_number, mqttc, args.topic))
+        thread = threading.Thread(target=process_file, args=(file, file_number, mqttc))
         threads.append(thread)
         thread.start()
 

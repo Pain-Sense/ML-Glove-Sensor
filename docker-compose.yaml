@@ -88,8 +88,6 @@ services:
       - DOCKER_INFLUXDB_INIT_ORG=UA
       - DOCKER_INFLUXDB_INIT_BUCKET=bucket1
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=abc
-      - GF_SECURITY_ALLOW_EMBEDDING=true
-      - GF_AUTH_ANONYMOUS_ENABLED=true
 
   telegraf:
     image: telegraf:1.30

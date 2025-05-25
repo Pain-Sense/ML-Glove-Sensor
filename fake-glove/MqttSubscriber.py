@@ -10,10 +10,6 @@ parser.add_argument(
     '-p', '--port', type=int, default=1883,
     help="Porto do broker MQTT."
 )
-parser.add_argument(
-    '-t', '--topic', type=str, default="sensors",
-    help="Tópico a subscrever."
-)
 
 args = parser.parse_args()
 
@@ -23,6 +19,6 @@ def on_message(client, userdata, message: subscribe.paho.MQTTMessage):
 
 subscribe.callback(
     on_message,
-    args.topic,
+    "sensors",
     hostname=args.addr, port=args.port
 )
