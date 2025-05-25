@@ -7,15 +7,33 @@ import datetime
 import time
 from math import floor
 
-# Global start time for all devices/files
-start_time = datetime.datetime.utcnow()
+# Remove the global start_time
+# start_time = datetime.datetime.utcnow()
 
 def get_dict_from_data(row, file_number):
     data = {}
     try:
-        offset_seconds = float(row[0])
-        dt = start_time + datetime.timedelta(seconds=offset_seconds)
+        # We don't need the offset_seconds to create a "future" timestamp
+        # if the goal is to send data as it "happens"
+        # However, if your CSV data represents offsets from some *actual* event time
+        # then you should re-evaluate how these offsets relate to current time.
+        # For typical sensor data, you'd want the timestamp to be the current time of measurement.
+
+        # Let's assume for now the row[0] is just an index or relative time
+        # and you want the actual timestamp to be when the message is sent.
+        # If row[0] represents seconds from the start of the *file's* recording,
+        # and you want to simulate that, you'd need a different approach.
+
+        # Option 1: Timestamp is the current UTC time when the message is prepared
+        dt = datetime.datetime.utcnow()
         data["timestamp"] = dt.isoformat() + "Z"
+
+        # Option 2: If row[0] is a *duration* from the very beginning of the script's run,
+        # and you want to simulate data coming in "real-time" from an event that started
+        # when the script launched, then you'd need the initial start_time.
+        # In that case, you might need to adjust the start_time at midnight or restart the script.
+        # However, for continuous data streams, Option 1 is usually preferred.
+
     except Exception as e:
         print(f"Timestamp conversion error for row {row}: {e}")
         return None
@@ -41,7 +59,7 @@ def process_file(file, file_number, mqttc):
             if data:
                 mqttc.publish("sensors", json.dumps(data))
                 print(f"Published: {data}")
-                time.sleep(0.1)
+                time.sleep(0.01)
 
 def main():
     parser = argparse.ArgumentParser()

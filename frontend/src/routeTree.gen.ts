@@ -21,10 +21,10 @@ import { Route as errors401Import } from './routes/(errors)/401'
 import { Route as authSignUpImport } from './routes/(auth)/sign-up'
 import { Route as authSignIn2Import } from './routes/(auth)/sign-in-2'
 import { Route as authSignInImport } from './routes/(auth)/sign-in'
-import { Route as authOtpImport } from './routes/(auth)/otp'
-import { Route as authForgotPasswordImport } from './routes/(auth)/forgot-password'
 import { Route as AuthenticatedMonitoringNewExperimentIndexImport } from './routes/_authenticated/monitoring/new-experiment/index'
 import { Route as AuthenticatedMonitoringLiveExperimentIdImport } from './routes/_authenticated/monitoring/live/$experimentId'
+import { Route as AuthenticatedDataHistoryIndexImport } from './routes/_authenticated/data-history/index'
+import { Route as AuthenticatedDataHistoryExperimentIdImport } from './routes/_authenticated/data-history/$experimentId'
 
 // Create/Update Routes
 
@@ -87,18 +87,6 @@ const authSignInRoute = authSignInImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const authOtpRoute = authOtpImport.update({
-  id: '/(auth)/otp',
-  path: '/otp',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const authForgotPasswordRoute = authForgotPasswordImport.update({
-  id: '/(auth)/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const AuthenticatedMonitoringNewExperimentIndexRoute =
   AuthenticatedMonitoringNewExperimentIndexImport.update({
     id: '/monitoring/new-experiment/',
@@ -113,6 +101,20 @@ const AuthenticatedMonitoringLiveExperimentIdRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
+const AuthenticatedDataHistoryIndexRoute =
+  AuthenticatedDataHistoryIndexImport.update({
+    id: '/data-history/',
+    path: '/data-history/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedDataHistoryExperimentIdRoute =
+  AuthenticatedDataHistoryExperimentIdImport.update({
+    id: '/data-history/$experimentId',
+    path: '/data-history/$experimentId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -122,20 +124,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AuthenticatedRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/(auth)/forgot-password': {
-      id: '/(auth)/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof authForgotPasswordImport
-      parentRoute: typeof rootRoute
-    }
-    '/(auth)/otp': {
-      id: '/(auth)/otp'
-      path: '/otp'
-      fullPath: '/otp'
-      preLoaderRoute: typeof authOtpImport
       parentRoute: typeof rootRoute
     }
     '/(auth)/sign-in': {
@@ -215,6 +203,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMonitoringNewExperimentIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/data-history/': {
+      id: '/_authenticated/data-history/'
+      path: '/data-history'
+      fullPath: '/data-history'
+      preLoaderRoute: typeof AuthenticatedDataHistoryIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/data-history/$experimentId': {
+      id: '/_authenticated/data-history/$experimentId'
+      path: '/data-history/$experimentId'
+      fullPath: '/data-history/$experimentId'
+      preLoaderRoute: typeof AuthenticatedDataHistoryExperimentIdImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
   }
 }
 
@@ -224,6 +226,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedMonitoringLiveExperimentIdRoute: typeof AuthenticatedMonitoringLiveExperimentIdRoute
   AuthenticatedMonitoringNewExperimentIndexRoute: typeof AuthenticatedMonitoringNewExperimentIndexRoute
+  AuthenticatedDataHistoryIndexRoute: typeof AuthenticatedDataHistoryIndexRoute
+  AuthenticatedDataHistoryExperimentIdRoute: typeof AuthenticatedDataHistoryExperimentIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -232,6 +236,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedMonitoringLiveExperimentIdRoute,
   AuthenticatedMonitoringNewExperimentIndexRoute:
     AuthenticatedMonitoringNewExperimentIndexRoute,
+  AuthenticatedDataHistoryIndexRoute:
+    AuthenticatedDataHistoryIndexRoute,
+  AuthenticatedDataHistoryExperimentIdRoute:
+    AuthenticatedDataHistoryExperimentIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -239,8 +247,6 @@ const AuthenticatedRouteRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof AuthenticatedRouteRouteWithChildren
-  '/forgot-password': typeof authForgotPasswordRoute
-  '/otp': typeof authOtpRoute
   '/sign-in': typeof authSignInRoute
   '/sign-in-2': typeof authSignIn2Route
   '/sign-up': typeof authSignUpRoute
@@ -252,11 +258,11 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/monitoring/live/$experimentId': typeof AuthenticatedMonitoringLiveExperimentIdRoute
   '/monitoring/new-experiment': typeof AuthenticatedMonitoringNewExperimentIndexRoute
+  '/data-history': typeof AuthenticatedDataHistoryIndexRoute
+  '/data-history/$experimentId': typeof AuthenticatedDataHistoryExperimentIdRoute
 }
 
 export interface FileRoutesByTo {
-  '/forgot-password': typeof authForgotPasswordRoute
-  '/otp': typeof authOtpRoute
   '/sign-in': typeof authSignInRoute
   '/sign-in-2': typeof authSignIn2Route
   '/sign-up': typeof authSignUpRoute
@@ -268,13 +274,13 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/monitoring/live/$experimentId': typeof AuthenticatedMonitoringLiveExperimentIdRoute
   '/monitoring/new-experiment': typeof AuthenticatedMonitoringNewExperimentIndexRoute
+  '/data-history': typeof AuthenticatedDataHistoryIndexRoute
+  '/data-history/$experimentId': typeof AuthenticatedDataHistoryExperimentIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/(auth)/forgot-password': typeof authForgotPasswordRoute
-  '/(auth)/otp': typeof authOtpRoute
   '/(auth)/sign-in': typeof authSignInRoute
   '/(auth)/sign-in-2': typeof authSignIn2Route
   '/(auth)/sign-up': typeof authSignUpRoute
@@ -286,14 +292,14 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/monitoring/live/$experimentId': typeof AuthenticatedMonitoringLiveExperimentIdRoute
   '/_authenticated/monitoring/new-experiment/': typeof AuthenticatedMonitoringNewExperimentIndexRoute
+  '/_authenticated/data-history': typeof AuthenticatedDataHistoryIndexRoute
+  '/_authenticated/data-history/$experimentId': typeof AuthenticatedDataHistoryExperimentIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
-    | '/forgot-password'
-    | '/otp'
     | '/sign-in'
     | '/sign-in-2'
     | '/sign-up'
@@ -305,10 +311,10 @@ export interface FileRouteTypes {
     | '/'
     | '/monitoring/live/$experimentId'
     | '/monitoring/new-experiment'
+    | '/data-history'
+    | '/data-history/$experimentId'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/forgot-password'
-    | '/otp'
     | '/sign-in'
     | '/sign-in-2'
     | '/sign-up'
@@ -320,11 +326,11 @@ export interface FileRouteTypes {
     | '/'
     | '/monitoring/live/$experimentId'
     | '/monitoring/new-experiment'
+    | '/data-history'
+    | '/data-history/$experimentId'
   id:
     | '__root__'
     | '/_authenticated'
-    | '/(auth)/forgot-password'
-    | '/(auth)/otp'
     | '/(auth)/sign-in'
     | '/(auth)/sign-in-2'
     | '/(auth)/sign-up'
@@ -336,13 +342,13 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/monitoring/live/$experimentId'
     | '/_authenticated/monitoring/new-experiment/'
+    | '/_authenticated/data-history'
+    | '/_authenticated/data-history/$experimentId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  authForgotPasswordRoute: typeof authForgotPasswordRoute
-  authOtpRoute: typeof authOtpRoute
   authSignInRoute: typeof authSignInRoute
   authSignIn2Route: typeof authSignIn2Route
   authSignUpRoute: typeof authSignUpRoute
@@ -355,8 +361,6 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  authForgotPasswordRoute: authForgotPasswordRoute,
-  authOtpRoute: authOtpRoute,
   authSignInRoute: authSignInRoute,
   authSignIn2Route: authSignIn2Route,
   authSignUpRoute: authSignUpRoute,
@@ -378,8 +382,6 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_authenticated",
-        "/(auth)/forgot-password",
-        "/(auth)/otp",
         "/(auth)/sign-in",
         "/(auth)/sign-in-2",
         "/(auth)/sign-up",
@@ -397,12 +399,6 @@ export const routeTree = rootRoute
         "/_authenticated/monitoring/live/$experimentId",
         "/_authenticated/monitoring/new-experiment/"
       ]
-    },
-    "/(auth)/forgot-password": {
-      "filePath": "(auth)/forgot-password.tsx"
-    },
-    "/(auth)/otp": {
-      "filePath": "(auth)/otp.tsx"
     },
     "/(auth)/sign-in": {
       "filePath": "(auth)/sign-in.tsx"

@@ -13,7 +13,7 @@ import { Main } from '@/components/layout/main'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { Experiment, ExperimentSelector } from './components/ExperimentSelector'
 
-export default function Dashboard() {
+export default function DataHistoryDashboard() {
   const navigate = useNavigate()
   const [experiment, setExperiment] = useState<Experiment | null>(null)
 
@@ -29,18 +29,17 @@ export default function Dashboard() {
       {/* ===== Main ===== */}
       <Main>
         <div className='mb-2 flex items-center justify-between space-y-2'>
-          <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
+          <h1 className='text-2xl font-bold tracking-tight'>Data history</h1>
         </div>
 
         <div className='mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
           <Card>
             <CardHeader>
-              <CardTitle>Start New Monitoring Experiment</CardTitle>
+              <CardTitle>Analyse data history</CardTitle>
             </CardHeader>
             <CardContent>
               <p className='text-muted-foreground'>
-                Begin a real-time monitoring experiment by selecting a patient
-                and device.
+                Analyse the data history of a past experiment by selecting it.
               </p>
             </CardContent>
             <CardFooter>
@@ -49,19 +48,12 @@ export default function Dashboard() {
             {experiment && (
               <CardFooter>
                 <Button
-                  onClick={() => navigate({ to: `/monitoring/live/${experiment.id}` })}
+                  onClick={() => navigate({ to: `/data-history/${experiment.id}` })}
                 >
-                  Start monitoring
+                  View data history
                 </Button>
               </CardFooter>
             )}
-            <CardFooter>
-              <Button
-                onClick={() => navigate({ to: '/monitoring/new-experiment' })}
-              >
-                New experiment
-              </Button>
-            </CardFooter>
           </Card>
         </div>
       </Main>
