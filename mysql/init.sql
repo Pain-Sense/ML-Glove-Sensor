@@ -21,6 +21,7 @@ CREATE TABLE experiments (
   id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   notes TEXT,
+  stopped INT,
   patient_id BIGINT,
   device_id BIGINT,
   CONSTRAINT fk_experiment_patient FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
@@ -33,8 +34,8 @@ INSERT INTO patients (name, age, gender, health_condition) VALUES
 
 INSERT INTO devices (name, type, status) VALUES
   ('ECG Sensor #001', 'ECG', 'available'),
-  ('ECG Sensor #002', 'ECG', 'in_use'),
-  ('ECG Sensor #003', 'ECG', 'maintenance'),
+  ('ECG Sensor #002', 'ECG', 'available'),
+  ('ECG Sensor #003', 'ECG', 'available'),
   ('ECG Sensor #004', 'ECG', 'available'),
   ('ECG Sensor #005', 'ECG', 'available'),
   ('ECG Sensor #006', 'ECG', 'available'),
@@ -43,7 +44,3 @@ INSERT INTO devices (name, type, status) VALUES
   ('ECG Sensor #009', 'ECG', 'available'),
   ('ECG Sensor #010', 'ECG', 'available');
   
-
-INSERT INTO experiments (name, notes, patient_id, device_id) VALUES
-  ('Baseline ECG', 'Resting state capture.', 1, 1),
-  ('Pain Response Study', 'ECG during stimulus.', 2, 2);

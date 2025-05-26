@@ -23,8 +23,6 @@ export default function LiveMonitoring() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [experimentInfo, setExperimentInfo] = useState<any | null>(null)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [sensorStatus, setSensorStatus] = useState<any | null>(null)
 
   useEffect(() => {
     const fetchExperimentInfo = async () => {
@@ -49,20 +47,6 @@ export default function LiveMonitoring() {
 
     fetchExperimentInfo()
   }, [])
-
-  useEffect(() => {
-    const fetchSensorData = async () => {
-      if (experimentInfo){
-        const res = await fetch(`http://localhost:8089/events/${experimentInfo.deviceId}`)
-        if (res.ok){
-          const data = await res.json()
-          setSensorStatus(data)
-        }
-      }
-    }
-    const intervalId = setInterval(fetchSensorData, 1500)
-    return () => clearInterval(intervalId)
-  })
 
   const handleStop = async () => {
     try {
@@ -124,20 +108,6 @@ export default function LiveMonitoring() {
           </p>
         </div>
 
-        {sensorStatus && !isStopped &&
-          <div className='flex gap-2'>
-            <p>
-              ECG sensor: {sensorStatus.ecg ? 'on' : 'off'}
-            </p>
-            <p>
-              BVP sensor: {sensorStatus.bvp ? 'on' : 'off'}
-            </p>
-            <p>
-              GSR sensor: {sensorStatus.gsr ? 'on' : 'off'}
-            </p>
-          </div>
-        }
-
 
         {isStopped ? (
           <>
@@ -149,6 +119,7 @@ export default function LiveMonitoring() {
         ) : (
           <Dashboards deviceId={experimentInfo?.deviceId}/>
         )}
+
       </Main>
     </>
   )
