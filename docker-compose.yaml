@@ -79,14 +79,12 @@ services:
       MYSQL_PASSWORD: admin123
       MYSQL_ROOT_PASSWORD: admin123
 
-
   grafana:
     image: grafana/grafana:12.0.0
     volumes:
       - grafana-data:/var/lib/grafana:z
       - ./grafana-provisioning/:/etc/grafana/provisioning:z
     depends_on:
-      - telegraf
       - influxdb
       - mysql
     ports:
@@ -100,6 +98,7 @@ services:
       - DOCKER_INFLUXDB_INIT_ORG=UA
       - DOCKER_INFLUXDB_INIT_BUCKET=bucket1
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=abc
+      - GF_SECURITY_ALLOW_EMBEDDING=true
 
   telegraf:
     image: telegraf:1.30
@@ -109,20 +108,11 @@ services:
       - kafka
       - influxdb
     volumes:
-      - ./wait-for-it.sh:/wait-for-it.sh:ro,z
       - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     environment:
       - HOST_PROC=/rootfs/proc
       - HOST_SYS=/rootfs/sys
       - HOST_ETC=/rootfs/etc
-    entrypoint:
-      - /wait-for-it.sh
-      - --timeout=60
-      - --strict
-      - kafka:9092
-      - --
-      - /entrypoint.sh
-      - telegraf
     ports:
       - "8125:8125/udp"
       - "8092:8092/udp"
@@ -140,6 +130,8 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     depends_on:
       - kafka
+      - mysql
+      - influxdb
     restart: unless-stopped
 
   fake-glove-producer:
@@ -157,7 +149,6 @@ services:
     ports:
       - "5173:5173"
     restart: unless-stopped
-
 volumes:
   mysql-data:
   influxdb-data:

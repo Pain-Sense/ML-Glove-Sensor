@@ -6,17 +6,13 @@ import threading
 import datetime
 import time
 from math import floor
-
-# Global start time for all devices/files
-#change teste para eniar mensagens com um timestamp especifico 
-start_time = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
-
 def get_dict_from_data(row, file_number):
     data = {}
     try:
-        offset_seconds = float(row[0])
-        dt = start_time + datetime.timedelta(seconds=offset_seconds)
+
+        dt = datetime.datetime.utcnow()
         data["timestamp"] = dt.isoformat() + "Z"
+
     except Exception as e:
         print(f"Timestamp conversion error for row {row}: {e}")
         return None
@@ -43,7 +39,7 @@ def process_file(file, file_number, mqttc):
             if data:
                 mqttc.publish("sensors", json.dumps(data))
                 print(f"Published: {data}")
-                time.sleep(0.1)
+                time.sleep(0.01)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -77,4 +73,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

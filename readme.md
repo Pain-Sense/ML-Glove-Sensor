@@ -6,9 +6,6 @@ docker compose up --build
 # Grafana is available on: (username: admin and password: admin)
 http://localhost:3000/
 
-# Frontend is available on
-http://localhost:5173/
-
 
 # Testing info
 
