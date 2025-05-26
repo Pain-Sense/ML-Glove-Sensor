@@ -1,4 +1,4 @@
-import { IconLayoutDashboard, IconHeart, IconDatabase } from '@tabler/icons-react'
+import { IconLayoutDashboard, IconHeart } from '@tabler/icons-react'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
@@ -20,12 +20,7 @@ export const sidebarData: SidebarData = {
           title: 'New Monitoring Experiment',
           url: '/monitoring/new-experiment',
           icon: IconHeart,
-        },
-        {
-          title: 'Data History',
-          url: '/data-history',
-          icon: IconDatabase,
-        },
+        }
       ],
     },
   ],

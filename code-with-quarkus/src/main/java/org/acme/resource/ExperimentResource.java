@@ -124,6 +124,7 @@ public class ExperimentResource {
         dto.notes = e.notes;
         dto.patientId = e.patient != null ? e.patient.id : null;
         dto.deviceId = e.device != null ? e.device.id : null;
+        dto.stopped = e.stopped;
         return dto;
     }
 }

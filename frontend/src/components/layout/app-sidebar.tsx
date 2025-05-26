@@ -7,7 +7,6 @@ import {
 import { NavGroup } from '@/components/layout/nav-group'
 import { NavUser } from '@/components/layout/nav-user'
 import { sidebarData } from './data/sidebar-data'
-import { EventNotifications } from './event-notifications'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -17,7 +16,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavGroup key={props.title} {...props} />
         ))}
       </SidebarContent>
-      <EventNotifications/>
       <SidebarFooter>
         <NavUser user={sidebarData.user} />
       </SidebarFooter>
