@@ -23,7 +23,9 @@ export default function Dashboard() {
     fetch('http://localhost:8089/experiments')
       .then((response) => response.json())
       .then((data) => {
-        setExperiments(data)
+        if (Array.isArray(data)) {
+          setExperiments(data)
+        }
       })
   }
 
