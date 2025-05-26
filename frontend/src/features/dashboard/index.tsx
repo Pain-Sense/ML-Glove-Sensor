@@ -1,21 +1,33 @@
-import { useState } from 'react'
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { Experiment, ExperimentSelector } from './components/ExperimentSelector'
+import { Experiment } from './components/ExperimentSelector'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '@/components/ui/table'
 
 export default function Dashboard() {
   const navigate = useNavigate()
-  const [experiment, setExperiment] = useState<Experiment | null>(null)
+  const [experiments, setExperiments] = useState<Experiment[]>([])
+
+  const fetchExperiments = () => {
+    fetch('http://localhost:8089/experiments')
+      .then((response) => response.json())
+      .then((data) => {
+        setExperiments(data)
+      })
+  }
+
+  useEffect(() => fetchExperiments(), [])
 
   return (
     <>
@@ -32,38 +44,57 @@ export default function Dashboard() {
           <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
         </div>
 
-        <div className='mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-          <Card>
-            <CardHeader>
-              <CardTitle>Start New Monitoring Experiment</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className='text-muted-foreground'>
-                Begin a real-time monitoring experiment by selecting a patient
-                and device.
-              </p>
-            </CardContent>
-            <CardFooter>
-              <ExperimentSelector onChange={(e) => setExperiment(e)}></ExperimentSelector>
-            </CardFooter>
-            {experiment && (
-              <CardFooter>
-                <Button
-                  onClick={() => navigate({ to: `/monitoring/live/${experiment.id}` })}
-                >
-                  Start monitoring
-                </Button>
-              </CardFooter>
-            )}
-            <CardFooter>
-              <Button
-                onClick={() => navigate({ to: '/monitoring/new-experiment' })}
-              >
-                New experiment
-              </Button>
-            </CardFooter>
-          </Card>
+        <div className='flex w-full justify-end mt-2'>
+          <Button onClick={() => navigate({ to: '/monitoring/new-experiment' })}>
+            Start new experiment
+          </Button>
         </div>
+
+        {/* ===== Experiment Table ===== */}
+        <section className='mt-10'>
+          <h2 className='text-xl font-semibold mb-4'>Your Experiments</h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Patient ID</TableHead>
+                <TableHead>Device ID</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {experiments.map((exp) => (
+                <TableRow key={exp.id}>
+                  <TableCell>{exp.id}</TableCell>
+                  <TableCell>{exp.name}</TableCell>
+                  {/* @ts-ignore */}
+                  <TableCell>{exp.patientId}</TableCell>
+                  {/* @ts-ignore */}
+                  <TableCell>{exp.deviceId}</TableCell>
+                  {/* @ts-ignore */}
+                  <TableCell>{exp.stopped ? 'Stopped' : 'Running'}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant='outline'
+                      onClick={() => navigate({ to: `/monitoring/live/${exp.id}` })}
+                    >
+                      View
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {experiments.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className='text-center'>
+                    No experiments found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </section>
       </Main>
     </>
   )
