@@ -80,6 +80,7 @@ public class ExperimentService {
             em.merge(device);
             assignmentRegistry.unassign(device.id);
             experiment.stopped = true;
+            em.merge(experiment);
         }
     }
 }
