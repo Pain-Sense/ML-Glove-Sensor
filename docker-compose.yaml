@@ -130,7 +130,15 @@ services:
       - mosquitto
     restart: unless-stopped
 
+  processing_k2k:
+    build:
+      context: ./processing/kafka2kafka
+      dockerfile: Dockerfile
+    depends_on:
+      - kafka
 
+
+      
   frontend:
     build:
       context: ./frontend

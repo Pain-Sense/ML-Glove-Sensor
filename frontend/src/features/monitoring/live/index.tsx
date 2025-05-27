@@ -1,26 +1,28 @@
 import { useEffect, useState } from 'react'
-import { useParams } from '@tanstack/react-router'
+import { useParams, useRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { CardTitle } from '@/components/ui/card'
+
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { GrafanaDashboards } from '../components/GrafanaDashboards'
+import Dashboards from '../components/Dashboards'
+import HistoricalDashboards from '../components/HistoricalDashboards'
 
 export default function LiveMonitoring() {
   const { experimentId } = useParams({
     from: '/_authenticated/monitoring/live/$experimentId',
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [isPaused, setIsPaused] = useState(false)
+  const router = useRouter()
+
   const [isConnected, setIsConnected] = useState(true)
+  const [isStopped, setIsStopped] = useState(false)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [experimentInfo, setExperimentInfo] = useState<any | null>(null)
-  const [sensorStatus, setSensorStatus] = useState<any | null>(null)
 
   useEffect(() => {
     const fetchExperimentInfo = async () => {
@@ -30,27 +32,21 @@ export default function LiveMonitoring() {
         )
         const data = await res.json()
         setExperimentInfo(data)
+
+        if (data.stopped) {
+          setIsStopped(true)
+        }
       } catch {
-        toast.error('Failed to fetch experiment info')
+        toast.error('Failed to fetch experiment info', {
+          duration: 2000,
+          dismissible: true,
+        })
+        router.navigate({ to: '/404' })
       }
     }
 
     fetchExperimentInfo()
-  }, [experimentId])
-
-  useEffect(() => {
-    const fetchSensorData = async () => {
-      if (experimentInfo){
-        const res = await fetch(`http://localhost:8089/events/${experimentInfo.deviceId}`)
-        if (res.ok){
-          const data = await res.json()
-          setSensorStatus(data)
-        }
-      }
-    }
-    const intervalId = setInterval(fetchSensorData, 1500)
-    return () => clearInterval(intervalId)
-  })
+  }, [])
 
   const handleStop = async () => {
     try {
@@ -59,7 +55,7 @@ export default function LiveMonitoring() {
       })
       toast.success('Experiment stopped')
       setIsConnected(false)
-      setIsPaused(true)
+      setIsStopped(true)
     } catch {
       toast.error('Failed to stop experiment')
     }
@@ -75,68 +71,55 @@ export default function LiveMonitoring() {
 
       <Main>
         <div className='mb-4 flex items-center justify-between'>
-          <h1 className='text-2xl font-bold tracking-tight'>Live Monitoring</h1>
-          <Badge variant={isConnected ? 'default' : 'destructive'}>
-            {isConnected ? 'Connected' : 'Disconnected'}
-          </Badge>
+          <h1 className='text-2xl font-bold tracking-tight'> {isStopped ? 'Historical Data' : 'Live Monitoring'}</h1>
+
+          <div className='flex items-center space-x-2'>
+            <Badge variant={isConnected ? 'default' : 'destructive'}>
+              {isConnected ? 'Connected' : 'Disconnected'}
+            </Badge>
+
+
+            {!isStopped && (
+              <Button variant='destructive' onClick={handleStop}>
+                Stop Experiment
+              </Button>
+            )} 
+          </div>
         </div>
 
-        <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
-          <Card className='md:col-span-1'>
-            <CardHeader>
-              <CardTitle>Session Info</CardTitle>
-            </CardHeader>
-            <CardContent className='space-y-2 text-sm'>
-              <p>
-                <strong>Experiment ID:</strong> {experimentId}
-              </p>
-              <p>
-                <strong>Experiment name:</strong> {experimentInfo?.name || 'N/A'}
-              </p>
-              <p>
-                <strong>Experiment Notes:</strong> {experimentInfo?.notes || 'N/A'}
-              </p>
-              <p>
-                <strong>Patient ID:</strong>{' '}
-                {experimentInfo?.patientId || 'N/A'}
-              </p>
-              <p>
-                <strong>Device ID:</strong>{' '}
-                {experimentInfo?.deviceId || 'N/A'}
-              </p>
-            </CardContent>
-            {sensorStatus && !isPaused &&
-              <CardFooter>
-                <p>
-                  ECG sensor: {sensorStatus.ecg ? 'on' : 'off'}
-                </p>
-                <p>
-                  BVP sensor: {sensorStatus.bvp ? 'on' : 'off'}
-                </p>
-                <p>
-                  GSR sensor: {sensorStatus.gsr ? 'on' : 'off'}
-                </p>
-              </CardFooter>
-            }
-          </Card>
-
-          <Card className='md:col-span-2'>
-            <CardHeader>
-              <CardTitle>Data</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {!isPaused && experimentInfo &&
-                <GrafanaDashboards deviceId={experimentInfo.deviceId}></GrafanaDashboards>
-              }
-            </CardContent>
-          </Card>
+        <CardTitle>Session Info</CardTitle>
+        <div className='space-y-2 flex gap-2 text-sm mt-2'>
+          <p>
+            <strong>Experiment ID:</strong> {experimentId}
+          </p>
+          <p>
+            <strong>Experiment name:</strong> {experimentInfo?.name || 'N/A'}
+          </p>
+          <p>
+            <strong>Experiment Notes:</strong> {experimentInfo?.notes || 'N/A'}
+          </p>
+          <p>
+            <strong>Patient ID:</strong>{' '}
+            {experimentInfo?.patientId || 'N/A'}
+          </p>
+          <p>
+            <strong>Device ID:</strong>{' '}
+            {experimentInfo?.deviceId || 'N/A'}
+          </p>
         </div>
 
-        <div className='mt-6 flex flex-col items-end gap-4 md:flex-row md:justify-end'>
-          <Button variant='destructive' onClick={handleStop}>
-            Stop
-          </Button>
-        </div>
+
+        {isStopped ? (
+          <>
+          <p className='mt-4 text-sm text-muted-foreground'>
+            The experiment has been stopped. You can view historical data below.
+          </p>
+            <HistoricalDashboards deviceId={experimentInfo?.deviceId} experimentId={experimentId} patientId={experimentInfo?.patientId} />
+          </>
+        ) : (
+          <Dashboards deviceId={experimentInfo?.deviceId}/>
+        )}
+
       </Main>
     </>
   )

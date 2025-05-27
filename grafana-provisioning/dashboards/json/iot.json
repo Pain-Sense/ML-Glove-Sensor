@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 3,
   "links": [],
   "panels": [
     {
@@ -802,7 +802,7 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-1m",
     "to": "now"
   },
   "timepicker": {
@@ -813,5 +813,5 @@
   "timezone": "",
   "title": "IoT",
   "uid": "d4ebeaef-38b9-48e3-9d38-7d80cfeb9260",
-  "version": 2
+  "version": 1
 }

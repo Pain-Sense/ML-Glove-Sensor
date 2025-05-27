@@ -6,4 +6,5 @@ public class ExperimentDTO {
     public String notes;
     public Long patientId;
     public Long deviceId;
+    public boolean stopped;
 }
