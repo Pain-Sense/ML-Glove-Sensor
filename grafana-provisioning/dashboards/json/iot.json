@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 3,
+  "id": 2,
   "links": [],
   "panels": [
     {
@@ -99,7 +99,7 @@
           "topic": "sensors"
         }
       ],
-      "title": "ECG",
+      "title": "$field",
       "transformations": [
         {
           "id": "filterByValue",
@@ -122,10 +122,9 @@
         {
           "id": "filterFieldsByName",
           "options": {
+            "byVariable": true,
             "include": {
-              "names": [
-                "ecg"
-              ]
+              "variable": "$field"
             }
           }
         }
@@ -321,7 +320,7 @@
         "x": 0,
         "y": 8
       },
-      "id": 5,
+      "id": 7,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -350,7 +349,7 @@
           "topic": "sensors"
         }
       ],
-      "title": "BVP",
+      "title": "ECG",
       "transformations": [
         {
           "id": "filterByValue",
@@ -375,7 +374,7 @@
           "options": {
             "include": {
               "names": [
-                "bvp"
+                "ecg"
               ]
             }
           }
@@ -572,7 +571,7 @@
         "x": 0,
         "y": 16
       },
-      "id": 3,
+      "id": 5,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -601,7 +600,7 @@
           "topic": "sensors"
         }
       ],
-      "title": "GSR",
+      "title": "BVP",
       "transformations": [
         {
           "id": "filterByValue",
@@ -626,7 +625,7 @@
           "options": {
             "include": {
               "names": [
-                "gsr"
+                "bvp"
               ]
             }
           }
@@ -773,6 +772,117 @@
         }
       ],
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "P51B197A508373975"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "ecg"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "f6e6f27e-3b57-4fee-9abf-4cce8f091b5b"
+          },
+          "refId": "A",
+          "topic": "sensors"
+        }
+      ],
+      "title": "GSR",
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "${deviceId}"
+                  }
+                },
+                "fieldName": "deviceId"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "gsr"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "stat"
     }
   ],
   "preload": false,
@@ -798,6 +908,25 @@
         "refresh": 1,
         "regex": "",
         "type": "query"
+      },
+      {
+        "current": {
+          "text": "bvp",
+          "value": "bvp"
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "P951FEA4DE68E13C5"
+        },
+        "definition": "import \"influxdata/influxdb/schema\"\n\nschema.fieldKeys(\n  bucket: \"bucket1\",\n  predicate: (r) => r._measurement == \"processed_sensor_data\",\n  start: -30d\n)\n",
+        "name": "field",
+        "options": [],
+        "query": {
+          "query": "import \"influxdata/influxdb/schema\"\n\nschema.fieldKeys(\n  bucket: \"bucket1\",\n  predicate: (r) => r._measurement == \"processed_sensor_data\",\n  start: -30d\n)\n"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
       }
     ]
   },
@@ -813,5 +942,5 @@
   "timezone": "",
   "title": "IoT",
   "uid": "d4ebeaef-38b9-48e3-9d38-7d80cfeb9260",
-  "version": 1
+  "version": 2
 }
