@@ -42,7 +42,7 @@ def process_file(file, file_number, mqttc):
                 print(f"Published to sensors: {data}")
 
                 # Publish each field separately
-                for field in ["ecg"]:
+                for field in ["ecg", "bvp", "gsr"]:
                     message = {
                         "deviceId": data["deviceId"],
                         "timestamp": data["timestamp"],
