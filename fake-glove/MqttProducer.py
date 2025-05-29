@@ -37,8 +37,21 @@ def process_file(file, file_number, mqttc):
         for row in reader:
             data = get_dict_from_data(row, file_number)
             if data:
+                # Publish full reading to "sensors"
                 mqttc.publish("sensors", json.dumps(data))
-                print(f"Published: {data}")
+                print(f"Published to sensors: {data}")
+
+                # Publish each field separately
+                for field in ["ecg"]:
+                    message = {
+                        "deviceId": data["deviceId"],
+                        "timestamp": data["timestamp"],
+                        "value": data[field]
+                    }
+                    topic = f"sensors/{field}"
+                    mqttc.publish(topic, json.dumps(message))
+                    print(f"Published to {topic}: {message}")
+
                 time.sleep(0.01)
 
 def main():
