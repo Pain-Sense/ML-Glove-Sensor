@@ -369,12 +369,12 @@
           "type": "influxdb",
           "uid": "P951FEA4DE68E13C5"
         },
-        "definition": "import \"influxdata/influxdb/schema\"\n\nschema.fieldKeys(\n  bucket: \"bucket1\",\n  predicate: (r) => r._measurement == \"processed_sensor_data\",\n  start: -30d\n)\n",
+        "definition": "import \"influxdata/influxdb/schema\"\n\nschema.fieldKeys(\n  bucket: \"bucket1\",\n  predicate: (r) => \n    r._measurement == \"processed_sensor_data\" and\n    r.experimentId == \"${experimentId}\",\n  start: -30d\n)\n",
         "description": "",
         "name": "field",
         "options": [],
         "query": {
-          "query": "import \"influxdata/influxdb/schema\"\n\nschema.fieldKeys(\n  bucket: \"bucket1\",\n  predicate: (r) => r._measurement == \"processed_sensor_data\",\n  start: -30d\n)\n"
+          "query": "import \"influxdata/influxdb/schema\"\n\nschema.fieldKeys(\n  bucket: \"bucket1\",\n  predicate: (r) => \n    r._measurement == \"processed_sensor_data\" and\n    r.experimentId == \"${experimentId}\",\n  start: -30d\n)\n"
         },
         "refresh": 1,
         "regex": "",
