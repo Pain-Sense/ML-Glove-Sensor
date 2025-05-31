@@ -61,6 +61,9 @@ export default function LiveMonitoring() {
     }
   }
 
+  const fields = ['ecg', 'bvp', 'gsr']
+  const processingFields = ['gsr_avg_scr_amp', 'gsr_num_scrs', 'gsr_scl', 'heart_rate', 'hrv_pnn50', 'hrv_rmssd', 'hrv_sdnn', 'ppg_perfusion_index']
+
   return (
     <>
       <Header>
@@ -114,10 +117,10 @@ export default function LiveMonitoring() {
           <p className='mt-4 text-sm text-muted-foreground'>
             The experiment has been stopped. You can view historical data below.
           </p>
-            <HistoricalDashboards deviceId={experimentInfo?.deviceId} experimentId={experimentId} patientId={experimentInfo?.patientId} />
+            <HistoricalDashboards deviceId={experimentInfo?.deviceId} experimentId={experimentId} patientId={experimentInfo?.patientId} fields={fields} processingFields={processingFields} />
           </>
         ) : (
-          <Dashboards deviceId={experimentInfo?.deviceId}/>
+          <Dashboards deviceId={experimentInfo?.deviceId} fields={fields} />
         )}
 
       </Main>
