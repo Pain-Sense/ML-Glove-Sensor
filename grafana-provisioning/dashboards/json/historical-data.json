@@ -379,6 +379,21 @@
         "refresh": 1,
         "regex": "",
         "type": "query"
+      },
+      {
+        "current": {
+          "text": "gsr_avg_scr_amp",
+          "value": "gsr_avg_scr_amp"
+        },
+        "definition": "import \"influxdata/influxdb/schema\"\n\nschema.fieldKeys(\n  bucket: \"bucket1\",\n  predicate: (r) => \n    r._measurement == \"enriched_hr_data\" and\n    r.experimentId == \"${experimentId}\",\n  start: -30d\n)\n",
+        "name": "processing_field",
+        "options": [],
+        "query": {
+          "query": "import \"influxdata/influxdb/schema\"\n\nschema.fieldKeys(\n  bucket: \"bucket1\",\n  predicate: (r) => \n    r._measurement == \"enriched_hr_data\" and\n    r.experimentId == \"${experimentId}\",\n  start: -30d\n)\n"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
       }
     ]
   },
