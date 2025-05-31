@@ -34,6 +34,7 @@ export default function LiveMonitoring() {
         setExperimentInfo(data)
 
         if (data.stopped) {
+          setIsConnected(false)
           setIsStopped(true)
         }
       } catch {
@@ -77,7 +78,7 @@ export default function LiveMonitoring() {
           <h1 className='text-2xl font-bold tracking-tight'> {isStopped ? 'Historical Data' : 'Live Monitoring'}</h1>
 
           <div className='flex items-center space-x-2'>
-            <Badge variant={isConnected ? 'default' : 'destructive'}>
+            <Badge variant={isConnected ? 'default' : 'destructive'} className={isConnected ?'bg-green-400' : ''}>
               {isConnected ? 'Connected' : 'Disconnected'}
             </Badge>
 
