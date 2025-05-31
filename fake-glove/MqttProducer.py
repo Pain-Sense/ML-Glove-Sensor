@@ -36,12 +36,25 @@ def process_file(file, file_number, mqttc):
 
         for row in reader:
             data = get_dict_from_data(row, file_number)
-            if data:
-                # Publish full reading to "sensors"
+            if not data:
+                continue
+
+                # Device 2
+            if file_number == 2:
+                gsr_message = {
+                    "deviceId": data["deviceId"],
+                    "timestamp": data["timestamp"],
+                    "value": data["gsr"]
+                }
+                mqttc.publish("sensors", json.dumps(gsr_message))
+                print(f"Published to sensors: {gsr_message}")
+                mqttc.publish("sensors/gsr", json.dumps(gsr_message))
+                print(f"Published to sensors/gsr: {gsr_message}")
+            else:
+                # Device 1 
                 mqttc.publish("sensors", json.dumps(data))
                 print(f"Published to sensors: {data}")
 
-                # Publish each field separately
                 for field in ["ecg", "bvp", "gsr"]:
                     message = {
                         "deviceId": data["deviceId"],
@@ -52,7 +65,7 @@ def process_file(file, file_number, mqttc):
                     mqttc.publish(topic, json.dumps(message))
                     print(f"Published to {topic}: {message}")
 
-                time.sleep(0.01)
+            time.sleep(0.01)
 
 def main():
     parser = argparse.ArgumentParser()
