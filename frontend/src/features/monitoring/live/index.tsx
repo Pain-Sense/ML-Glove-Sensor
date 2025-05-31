@@ -23,6 +23,8 @@ export default function LiveMonitoring() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [experimentInfo, setExperimentInfo] = useState<any | null>(null)
+  const [experimentFields, setExperimentFields] = useState<string[]>([])
+  const [processingFields, setProcessingFields] = useState<string[]>([])
 
   useEffect(() => {
     const fetchExperimentInfo = async () => {
@@ -34,6 +36,7 @@ export default function LiveMonitoring() {
         setExperimentInfo(data)
 
         if (data.stopped) {
+          await fetch(`http://localhost:8089/experiments/${experimentId}/metrics/fields/grouped`).then((res) => res.json()).then(data => setProcessingFields(data))
           setIsConnected(false)
           setIsStopped(true)
         }
@@ -49,11 +52,37 @@ export default function LiveMonitoring() {
     fetchExperimentInfo()
   }, [])
 
+    useEffect(() => {
+    if (!experimentId) return;
+
+    const timeoutId = setTimeout(() => {
+      const fetchFields = async () => {
+
+        try {
+          const response = await fetch(`http://localhost:8089/experiments/${experimentId}/metrics/fields`);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch fields: ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          setExperimentFields(data);
+        } catch {
+          //
+        } 
+      };
+
+      fetchFields();
+    }, 2000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   const handleStop = async () => {
     try {
       await fetch(`http://localhost:8089/experiments/${experimentId}/stop`, {
         method: 'POST',
       })
+      await fetch(`http://localhost:8089/experiments/${experimentId}/metrics/fields/grouped`).then((res) => res.json()).then(data => setProcessingFields(data))
       toast.success('Experiment stopped')
       setIsConnected(false)
       setIsStopped(true)
@@ -61,9 +90,6 @@ export default function LiveMonitoring() {
       toast.error('Failed to stop experiment')
     }
   }
-
-  const fields = ['ecg', 'bvp', 'gsr']
-  const processingFields = ['gsr_avg_scr_amp', 'gsr_num_scrs', 'gsr_scl', 'heart_rate', 'hrv_pnn50', 'hrv_rmssd', 'hrv_sdnn', 'ppg_perfusion_index']
 
   return (
     <>
@@ -118,10 +144,10 @@ export default function LiveMonitoring() {
           <p className='mt-4 text-sm text-muted-foreground'>
             The experiment has been stopped. You can view historical data below.
           </p>
-            <HistoricalDashboards deviceId={experimentInfo?.deviceId} experimentId={experimentId} patientId={experimentInfo?.patientId} fields={fields} processingFields={processingFields} />
+            <HistoricalDashboards deviceId={experimentInfo?.deviceId} experimentId={experimentId} patientId={experimentInfo?.patientId} fields={experimentFields} processingFields={processingFields} />
           </>
         ) : (
-          <Dashboards deviceId={experimentInfo?.deviceId} fields={fields} />
+          <Dashboards deviceId={experimentInfo?.deviceId} fields={experimentFields} />
         )}
 
       </Main>

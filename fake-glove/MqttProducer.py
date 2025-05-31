@@ -46,8 +46,14 @@ def process_file(file, file_number, mqttc):
                     "timestamp": data["timestamp"],
                     "value": data["gsr"]
                 }
-                mqttc.publish("sensors", json.dumps(gsr_message))
-                print(f"Published to sensors: {gsr_message}")
+
+                sensors_message = {
+                    "deviceId": data["deviceId"],
+                    "timestamp": data["timestamp"],
+                    "gsr": data["gsr"]
+                }
+                mqttc.publish("sensors", json.dumps(sensors_message))
+                print(f"Published to sensors: {sensors_message}")
                 mqttc.publish("sensors/gsr", json.dumps(gsr_message))
                 print(f"Published to sensors/gsr: {gsr_message}")
             else:

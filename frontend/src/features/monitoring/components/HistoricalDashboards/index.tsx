@@ -18,7 +18,7 @@ export default function HistoricalDashboards({deviceId, patientId, experimentId,
       </div>
 
       <div className="flex flex-col gap-4">
-        {processingFields.map((field) => (
+        {processingFields.filter((f) => !fields.includes(f)).map((field) => (
           <div key={field}>
             <div className="flex flex-col gap-2">
                 <iframe

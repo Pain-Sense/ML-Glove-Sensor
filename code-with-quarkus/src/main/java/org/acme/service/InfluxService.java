@@ -37,89 +37,45 @@ public class InfluxService {
         client = InfluxDBClientFactory.create(influxUrl, influxToken.toCharArray(), influxOrg, influxBucket);
     }
 
-    public List<Map<String, Object>> queryMetricsInRange(Long experimentId, String start, String stop) {
-      String flux = String.format("""
-          from(bucket: "%s")
-            |> range(start: %s, stop: %s)
-            |> filter(fn: (r) => r._measurement == "%s" and r.experimentId == "%d")
-      """, influxBucket, start, stop, measurement, experimentId);
+  public List<String> getFieldsForLiveExperiment(Long experimentId) {
+    List<String> fieldKeys = new ArrayList<>();
+    fieldKeys.addAll(getFieldKeysFromMeasurement("processed_sensor_data", experimentId));
+    return fieldKeys.stream().distinct().toList(); 
+  }
 
-        QueryApi queryApi = client.getQueryApi();
-        List<FluxTable> tables = queryApi.query(flux);
-        List<Map<String, Object>> results = new ArrayList<>();
+  public List<String> getFieldsForHistoricalData(Long experimentId) {
+    List<String> fieldKeys = new ArrayList<>();
+    fieldKeys.addAll(getFieldKeysFromMeasurement("processed_sensor_data", experimentId));
+    fieldKeys.addAll(getFieldKeysFromMeasurement("enriched_hr_data", experimentId));
+    return fieldKeys.stream().distinct().toList(); 
+  }
 
-        for (FluxTable table : tables) {
-            for (FluxRecord record : table.getRecords()) {
-                Map<String, Object> entry = new HashMap<>();
-                entry.put("field", record.getField());
-                entry.put("value", record.getValue());
-                entry.put("time", record.getTime());
-                entry.put("deviceId", record.getValueByKey("deviceId"));
-                entry.put("experimentId", record.getValueByKey("experimentId"));
-                results.add(entry);
-            }
-        }
-
-        return results;
-    }
-
-    public List<Map<String, Object>> queryHistory(Long experimentId, String start) {
-      String flux = String.format("""
-          from(bucket: "%s")
-            |> range(start: %s)
-            |> filter(fn: (r) => r._measurement == "%s" and r.experimentId == "%d")
-      """, influxBucket, start, measurement, experimentId);
-
-        QueryApi queryApi = client.getQueryApi();
-        List<FluxTable> tables = queryApi.query(flux);
-        List<Map<String, Object>> results = new ArrayList<>();
-
-        for (FluxTable table : tables) {
-            for (FluxRecord record : table.getRecords()) {
-                Map<String, Object> entry = new HashMap<>();
-                entry.put("field", record.getField());
-                entry.put("value", record.getValue());
-                entry.put("time", record.getTime());
-                entry.put("deviceId", record.getValueByKey("deviceId"));
-                entry.put("experimentId", record.getValueByKey("experimentId"));
-                results.add(entry);
-            }
-        }
-
-        return results;
-    }
-
-    public List<Map<String, Object>> queryAggregatedMetrics(
-      Long experimentId,
-      String field,
-      String start,
-      String stop,
-      String window,
-      String aggregateFn
-    ) {
+  private List<String> getFieldKeysFromMeasurement(String measurement, Long experimentId) {
     String flux = String.format("""
-        from(bucket: "%s")
-          |> range(start: %s, stop: %s)
-          |> filter(fn: (r) => r._measurement == "%s" and r._field == "%s" and r.experimentId == "%d")
-          |> aggregateWindow(every: %s, fn: %s, createEmpty: false)
-          |> yield(name: "agg")
-        """, influxBucket, start, stop, measurement, field, experimentId, window, aggregateFn);
+        import "influxdata/influxdb/schema"
+        
+        schema.fieldKeys(
+          bucket: "%s",
+          predicate: (r) => 
+            r._measurement == "%s" and 
+            r.experimentId == "%d",
+          start: -30d
+        )
+    """, influxBucket, measurement, experimentId);
 
     QueryApi queryApi = client.getQueryApi();
     List<FluxTable> tables = queryApi.query(flux);
-    List<Map<String, Object>> results = new ArrayList<>();
+    List<String> keys = new ArrayList<>();
 
     for (FluxTable table : tables) {
         for (FluxRecord record : table.getRecords()) {
-            Map<String, Object> entry = new HashMap<>();
-            entry.put("time", record.getTime());
-            entry.put("value", record.getValue());
-            entry.put("field", record.getField());
-            entry.put("experimentId", record.getValueByKey("experimentId"));
-            results.add(entry);
+            Object key = record.getValueByKey("_value");
+            if (key != null) {
+                keys.add(key.toString());
+            }
         }
     }
 
-    return results;
+    return keys;
   }
 }
