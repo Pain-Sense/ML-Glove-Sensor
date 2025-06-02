@@ -80,13 +80,14 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_INSTALL_PLUGINS=grafana-mqtt-datasource
       - DOCKER_INFLUXDB_INIT_ORG=UA
       - DOCKER_INFLUXDB_INIT_BUCKET=bucket1
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=abc
       - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
 
   telegraf:
     image: telegraf:1.30

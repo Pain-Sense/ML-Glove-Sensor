@@ -78,43 +78,23 @@ public class ExperimentResource {
     }
 
     @GET
-    @Path("/{id}/metrics")
+    @Path("/{id}/metrics/fields")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMetrics(
-        @PathParam("id") Long experimentId,
-        @QueryParam("start") @DefaultValue("-30s") String start,
-        @QueryParam("stop") @DefaultValue("now()") String stop
+    public Response getFieldKeys(
+        @PathParam("id") Long experimentId
     ) {
-        List<Map<String, Object>> results = influxService.queryMetricsInRange(experimentId, start, stop);
-        return Response.ok(results).build();
+        List<String> fieldKeys = influxService.getFieldsForLiveExperiment(experimentId);
+        return Response.ok(fieldKeys).build();
     }
 
     @GET
-    @Path("/{id}/history")
+    @Path("/{id}/metrics/fields/grouped")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getHistory(
-        @PathParam("id") Long experimentId,
-        @QueryParam("start") @DefaultValue("2025-01-01T00:00:00Z") String start
+    public Response getGroupedFieldKeys(
+        @PathParam("id") Long experimentId
     ) {
-        List<Map<String, Object>> results = influxService.queryHistory(experimentId, start);
-        return Response.ok(results).build();
-    }
-
-    @GET
-    @Path("/{id}/metrics/aggregate")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getAggregatedMetrics(
-        @PathParam("id") Long experimentId,
-        @QueryParam("start") @DefaultValue("-5m") String start,
-        @QueryParam("stop") @DefaultValue("now()") String stop,
-        @QueryParam("window") @DefaultValue("5s") String window,
-        @QueryParam("aggregateFn") @DefaultValue("mean") String aggregateFn,
-        @QueryParam("field") @DefaultValue("bvp") String field
-    ) {
-        List<Map<String, Object>> result = influxService.queryAggregatedMetrics(
-            experimentId, field, start, stop, window, aggregateFn
-        );
-        return Response.ok(result).build();
+        List<String> grouped = influxService.getFieldsForHistoricalData(experimentId);
+        return Response.ok(grouped).build();
     }
 
     private ExperimentDTO toDTO(Experiment e) {
