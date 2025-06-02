@@ -25,6 +25,7 @@ export default function LiveMonitoring() {
   const [experimentInfo, setExperimentInfo] = useState<any | null>(null)
   const [experimentFields, setExperimentFields] = useState<string[]>([])
   const [processingFields, setProcessingFields] = useState<string[]>([])
+  const [deviceStatus, setDeviceStatus] = useState<'online' | 'offline'>('online')
 
   useEffect(() => {
     const fetchExperimentInfo = async () => {
@@ -52,7 +53,7 @@ export default function LiveMonitoring() {
     fetchExperimentInfo()
   }, [])
 
-    useEffect(() => {
+  useEffect(() => {
     if (!experimentId) return;
 
     const timeoutId = setTimeout(() => {
@@ -77,13 +78,53 @@ export default function LiveMonitoring() {
     return () => clearTimeout(timeoutId);
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (!experimentInfo?.deviceId) return;
+
+      try {
+        const response = await fetch('http://localhost:8089/devices/events');
+        const data = await response.json()
+
+        const device = data.find((id: string) => id === String(experimentInfo?.deviceId))
+
+        if (device) {
+          setDeviceStatus('offline')
+          setIsConnected(false)
+          toast.error('Device is OFFLINE', {
+            duration: 4000,
+            position: 'top-right',
+            richColors: true,
+            dismissible: true,
+          })
+        } else if (deviceStatus === 'offline' && !device) {
+          setDeviceStatus('online')
+          setIsConnected(true)
+          toast.success('Device is ONLINE', {
+            duration: 4000,
+            position: 'top-right',
+            richColors: true,
+            dismissible: true,
+          })
+        }
+      } catch {
+        //
+      }
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [deviceStatus, experimentInfo?.deviceId])
+
   const handleStop = async () => {
     try {
       await fetch(`http://localhost:8089/experiments/${experimentId}/stop`, {
         method: 'POST',
       })
       await fetch(`http://localhost:8089/experiments/${experimentId}/metrics/fields/grouped`).then((res) => res.json()).then(data => setProcessingFields(data))
-      toast.success('Experiment stopped')
+      toast.success('Experiment stopped', {
+        dismissible: true,
+        duration: 1000,
+      })
       setIsConnected(false)
       setIsStopped(true)
     } catch {

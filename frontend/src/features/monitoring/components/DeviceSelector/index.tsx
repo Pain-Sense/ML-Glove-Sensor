@@ -47,8 +47,21 @@ export const DeviceSelector: React.FC<Props> = ({ onSelect }) => {
       if (data.available) {
         const device = devices.find((d) => d.id.toString() === selectedId)
         if (device) onSelect(device)
+
+          toast.success('Device is ONLINE', {
+            duration: 4000,
+            position: 'top-right',
+            richColors: true,
+            dismissible: true
+          })
       } else {
         setShowDeviceNotAvailable(true)
+
+        toast.error('Device is OFFLINE', {
+          duration: 4000,
+          position: 'top-right',
+          richColors: true
+        })
 
         setTimeout(() => {
           setShowDeviceNotAvailable(false)
