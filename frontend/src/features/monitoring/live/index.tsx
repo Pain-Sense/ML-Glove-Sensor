@@ -121,7 +121,10 @@ export default function LiveMonitoring() {
         method: 'POST',
       })
       await fetch(`http://localhost:8089/experiments/${experimentId}/metrics/fields/grouped`).then((res) => res.json()).then(data => setProcessingFields(data))
-      toast.success('Experiment stopped')
+      toast.success('Experiment stopped', {
+        dismissible: true,
+        duration: 1000,
+      })
       setIsConnected(false)
       setIsStopped(true)
     } catch {
