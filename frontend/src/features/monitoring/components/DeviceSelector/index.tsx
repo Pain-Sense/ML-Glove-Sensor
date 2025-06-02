@@ -49,7 +49,7 @@ export const DeviceSelector: React.FC<Props> = ({ onSelect }) => {
         if (device) onSelect(device)
 
           toast.success('Device is ONLINE', {
-            duration: 2000,
+            duration: 4000,
             position: 'top-right',
             richColors: true,
             dismissible: true
@@ -58,7 +58,7 @@ export const DeviceSelector: React.FC<Props> = ({ onSelect }) => {
         setShowDeviceNotAvailable(true)
 
         toast.error('Device is OFFLINE', {
-          duration: 2000,
+          duration: 4000,
           position: 'top-right',
           richColors: true
         })

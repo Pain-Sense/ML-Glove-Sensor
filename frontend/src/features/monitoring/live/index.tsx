@@ -92,7 +92,7 @@ export default function LiveMonitoring() {
           setDeviceStatus('offline')
           setIsConnected(false)
           toast.error('Device is OFFLINE', {
-            duration: 2000,
+            duration: 4000,
             position: 'top-right',
             richColors: true,
             dismissible: true,
@@ -101,7 +101,7 @@ export default function LiveMonitoring() {
           setDeviceStatus('online')
           setIsConnected(true)
           toast.success('Device is ONLINE', {
-            duration: 2000,
+            duration: 4000,
             position: 'top-right',
             richColors: true,
             dismissible: true,
