@@ -25,6 +25,7 @@ export default function LiveMonitoring() {
   const [experimentInfo, setExperimentInfo] = useState<any | null>(null)
   const [experimentFields, setExperimentFields] = useState<string[]>([])
   const [processingFields, setProcessingFields] = useState<string[]>([])
+  const [deviceStatus, setDeviceStatus] = useState<'online' | 'offline'>('online')
 
   useEffect(() => {
     const fetchExperimentInfo = async () => {
@@ -52,7 +53,7 @@ export default function LiveMonitoring() {
     fetchExperimentInfo()
   }, [])
 
-    useEffect(() => {
+  useEffect(() => {
     if (!experimentId) return;
 
     const timeoutId = setTimeout(() => {
@@ -76,6 +77,43 @@ export default function LiveMonitoring() {
 
     return () => clearTimeout(timeoutId);
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (!experimentInfo?.deviceId) return;
+
+      try {
+        const response = await fetch('http://localhost:8089/devices/events');
+        const data = await response.json()
+
+        const device = data.find((id: string) => id === String(experimentInfo?.deviceId))
+
+        if (device) {
+          setDeviceStatus('offline')
+          setIsConnected(false)
+          toast.error('Device is OFFLINE', {
+            duration: 2000,
+            position: 'top-right',
+            richColors: true,
+            dismissible: true,
+          })
+        } else if (deviceStatus === 'offline' && !device) {
+          setDeviceStatus('online')
+          setIsConnected(true)
+          toast.success('Device is ONLINE', {
+            duration: 2000,
+            position: 'top-right',
+            richColors: true,
+            dismissible: true,
+          })
+        }
+      } catch {
+        //
+      }
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [deviceStatus, experimentInfo?.deviceId])
 
   const handleStop = async () => {
     try {
