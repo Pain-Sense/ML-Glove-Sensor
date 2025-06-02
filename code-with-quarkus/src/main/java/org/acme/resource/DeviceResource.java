@@ -4,6 +4,7 @@ import org.acme.dto.DeviceDTO;
 import org.acme.entity.Device;
 import org.acme.service.DeviceStreamTracker;
 import org.acme.service.DeviceAssignmentRegistry;
+import org.acme.service.DeviceWatchdog;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -28,6 +29,9 @@ public class DeviceResource {
 
     @Inject
     DeviceAssignmentRegistry assignmentRegistry;
+
+    @Inject
+    DeviceWatchdog watchdog;
 
     @GET
     public List<DeviceDTO> getAll() {
@@ -66,6 +70,12 @@ public class DeviceResource {
 
         em.persist(device);
         return Response.status(Response.Status.CREATED).entity(toDTO(device)).build();
+    }
+
+    @GET
+    @Path("/events")
+    public Response getOfflineDevices() {
+        return Response.ok(watchdog.getOfflineDeviceList()).build();
     }
 
     private DeviceDTO toDTO(Device d) {
