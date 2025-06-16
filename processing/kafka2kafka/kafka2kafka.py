@@ -4,25 +4,26 @@ import json
 import argparse
 import time
 import numpy as np
-import pandas as pd 
+import pandas as pd
 import neurokit2 as nk
 from datetime import datetime
-import collections 
+import collections
 
+BUFFER_SIZE_SAMPLES = 2000
+SAMPLING_RATE = 100
+PROCESS_INTERVAL_SECONDS = 5
 
-BUFFER_SIZE_SAMPLES = 2000  
-SAMPLING_RATE = 100       
-PROCESS_INTERVAL_SECONDS = 5 
-
-
-ecg_buffer = collections.deque(maxlen=BUFFER_SIZE_SAMPLES)
-bvp_buffer = collections.deque(maxlen=BUFFER_SIZE_SAMPLES)
-gsr_buffer = collections.deque(maxlen=BUFFER_SIZE_SAMPLES)
-timestamp_buffer = collections.deque(maxlen=BUFFER_SIZE_SAMPLES) # Not strictly needed for features, but good for context
+# Using a dictionary of deques to manage buffers per deviceId
+device_buffers = collections.defaultdict(lambda: {
+    'ecg': collections.deque(maxlen=BUFFER_SIZE_SAMPLES),
+    'bvp': collections.deque(maxlen=BUFFER_SIZE_SAMPLES),
+    'gsr': collections.deque(maxlen=BUFFER_SIZE_SAMPLES),
+    'timestamp': collections.deque(maxlen=BUFFER_SIZE_SAMPLES)
+})
 
 last_processed_time = {} # Stores {'deviceId': timestamp_of_last_processing}
 
-# Kafka Setup 
+# Kafka Setup
 parser = argparse.ArgumentParser()
 parser.add_argument(
     '-a', '--address', '--bootstrap-address',
@@ -73,7 +74,6 @@ def compute_ecg_features(ecg_signal_array):
     """
     # Pre-check for flat or invalid signal
     if not np.any(np.isfinite(ecg_signal_array)) or np.all(ecg_signal_array == ecg_signal_array[0]):
-        # print("Warning: ECG signal is flat or invalid. Skipping ECG feature computation.")
         return {}
     if len(ecg_signal_array) < SAMPLING_RATE * 5: # Recommended minimum 5 seconds for robust HR/HRV
         return {}
@@ -118,7 +118,6 @@ def compute_gsr_features(gsr_signal_array):
     """
     # Pre-check for flat or invalid signal
     if not np.any(np.isfinite(gsr_signal_array)) or np.all(gsr_signal_array == gsr_signal_array[0]):
-        # print("Warning: GSR signal is flat or invalid. Skipping GSR feature computation.")
         return {}
     if len(gsr_signal_array) < SAMPLING_RATE * 5: # Recommended minimum 5 seconds for GSR analysis
         return {}
@@ -134,15 +133,13 @@ def compute_gsr_features(gsr_signal_array):
                 features['gsr_scl'] = round(scl_val, 4)
 
         # 2. Skin Conductance Responses (SCRs) - Phasic component
-        # Use np.nanmean to safely average, ignoring NaNs if present
-        # Check if 'SCR_Amplitude' exists AND contains valid, non-NaN amplitudes
         if "SCR_Amplitude" in info and len(info["SCR_Amplitude"]) > 0 and np.any(np.isfinite(info["SCR_Amplitude"])):
             scr_amplitudes = np.array(info["SCR_Amplitude"])
             features['gsr_num_scrs'] = len(scr_amplitudes)
             features['gsr_avg_scr_amp'] = round(np.nanmean(scr_amplitudes), 4)
         else:
             features['gsr_num_scrs'] = 0
-            features['gsr_avg_scr_amp'] = 0.0 # Set to 0 if no SCRs or valid amplitudes
+            features['gsr_avg_scr_amp'] = 0.0
 
         return features
 
@@ -157,7 +154,6 @@ def compute_ppg_features(bvp_signal_array):
     """
     # Pre-check for flat or invalid signal
     if not np.any(np.isfinite(bvp_signal_array)) or np.all(bvp_signal_array == bvp_signal_array[0]):
-        # print("Warning: BVP signal is flat or invalid. Skipping PPG feature computation.")
         return {}
     if len(bvp_signal_array) < SAMPLING_RATE * 1: # Need at least 1 second for basic PI
         return {}
@@ -173,7 +169,7 @@ def compute_ppg_features(bvp_signal_array):
         if dc_component != 0 and not np.isnan(ac_component) and not np.isnan(dc_component):
             features['ppg_perfusion_index'] = round((ac_component / dc_component) * 100, 2)
         else:
-            features['ppg_perfusion_index'] = 0.0 # Set to 0 if invalid components
+            features['ppg_perfusion_index'] = 0.0
 
         return features
 
@@ -188,64 +184,86 @@ try:
         data: dict = message.value
         current_device_id = data.get('deviceId')
 
+        if not current_device_id:
+            print("Skipping message: 'deviceId' not found.")
+            continue
+
+        # Get buffers for the current device
+        buffers = device_buffers[current_device_id]
+
+        # Append data to respective buffers if present in the current message
+        if data.get('ecg') is not None:
+            buffers['ecg'].append(data['ecg'])
+        if data.get('bvp') is not None:
+            buffers['bvp'].append(data['bvp'])
+        if data.get('gsr') is not None:
+            buffers['gsr'].append(data['gsr'])
+        if data.get('timestamp') is not None:
+            buffers['timestamp'].append(data['timestamp'])
+
         # Initialize last_processed_time for new devices
         if current_device_id not in last_processed_time:
             last_processed_time[current_device_id] = time.time()
 
-        # Append data to respective buffers
-        # Ensure values are not None before appending
-        if data.get('ecg') is not None:
-            ecg_buffer.append(data['ecg'])
-        if data.get('bvp') is not None:
-            bvp_buffer.append(data['bvp'])
-        if data.get('gsr') is not None:
-            gsr_buffer.append(data['gsr'])
-        if data.get('timestamp') is not None:
-            timestamp_buffer.append(data['timestamp'])
-
-        # Process features if buffer is full enough and it's time to process
         current_time = time.time()
-        # Ensure buffers are sufficiently filled BEFORE attempting to process
-        if (len(ecg_buffer) == BUFFER_SIZE_SAMPLES and
-            len(bvp_buffer) == BUFFER_SIZE_SAMPLES and
-            len(gsr_buffer) == BUFFER_SIZE_SAMPLES and
-            (current_time - last_processed_time[current_device_id]) >= PROCESS_INTERVAL_SECONDS):
 
-            # Convert deques to numpy arrays for NeuroKit2
-            # Use np.array(list(deque)) to ensure it's a regular NumPy array
-            ecg_array = np.array(list(ecg_buffer))
-            bvp_array = np.array(list(bvp_buffer))
-            gsr_array = np.array(list(gsr_buffer))
+        # Process features if it's time to process for this device
+        if (current_time - last_processed_time[current_device_id]) >= PROCESS_INTERVAL_SECONDS:
 
-            # Initialize a dictionary for all features
+            # Initialize a dictionary for all features, common for all outputs
             all_features = {
                 'timestamp': datetime.utcnow().isoformat() + 'Z',
                 'deviceId': current_device_id,
             }
+            
+            # Flags to check if any sensor data was actually processed and features computed
+            ecg_processed = False
+            bvp_processed = False
+            gsr_processed = False
 
-            # Compute and add ECG features
-            ecg_features = compute_ecg_features(ecg_array)
-            all_features.update(ecg_features)
+            # --- ECG Processing ---
+            # Only process ECG if the buffer is full AND the current message contained ECG data
+            if len(buffers['ecg']) == BUFFER_SIZE_SAMPLES and data.get('ecg') is not None:
+                ecg_array = np.array(list(buffers['ecg']))
+                ecg_features = compute_ecg_features(ecg_array)
+                if ecg_features: # Only update if features were successfully computed (not empty)
+                    all_features.update(ecg_features)
+                    ecg_processed = True
+                # Clear buffer if you want non-overlapping windows after processing
+                # buffers['ecg'].clear() # Uncomment if you want discrete, non-overlapping windows
 
-            # Compute and add GSR features
-            gsr_features = compute_gsr_features(gsr_array)
-            all_features.update(gsr_features)
+            # --- GSR Processing ---
+            # Only process GSR if the buffer is full AND the current message contained GSR data
+            if len(buffers['gsr']) == BUFFER_SIZE_SAMPLES and data.get('gsr') is not None:
+                gsr_array = np.array(list(buffers['gsr']))
+                gsr_features = compute_gsr_features(gsr_array)
+                if gsr_features:
+                    all_features.update(gsr_features)
+                    gsr_processed = True
+                # buffers['gsr'].clear() # Uncomment if you want discrete, non-overlapping windows
 
-            # Compute and add PPG features
-            ppg_features = compute_ppg_features(bvp_array)
-            all_features.update(ppg_features)
+            # --- PPG (BVP) Processing ---
+            # Only process BVP if the buffer is full AND the current message contained BVP data
+            if len(buffers['bvp']) == BUFFER_SIZE_SAMPLES and data.get('bvp') is not None:
+                bvp_array = np.array(list(buffers['bvp']))
+                ppg_features = compute_ppg_features(bvp_array)
+                if ppg_features:
+                    all_features.update(ppg_features)
+                    bvp_processed = True
+                # buffers['bvp'].clear() # Uncomment if you want discrete, non-overlapping windows
 
-            # Publish the consolidated features
-            if producer:
-                # Use 'PhysiologicalFeatures' topic for processed data
+            # Publish the consolidated features ONLY if at least one type of feature was processed
+            # and the dictionary contains more than just 'timestamp' and 'deviceId'
+            if producer and (ecg_processed or bvp_processed or gsr_processed) and len(all_features) > 2:
                 producer.send("hrData", all_features)
                 print(f"Published features for device {current_device_id}: {all_features}")
+            else:
+                # print(f"No sufficient or valid features to publish for device {current_device_id} at this interval.")
+                pass # Silently skip if no features were computed
 
-            # Update last processed time for this device
+            # Update last processed time for this device regardless of whether features were published
+            # This ensures processing attempts happen at regular intervals
             last_processed_time[current_device_id] = current_time
-
-            # Note: Deques automatically handle trimming to maxlen.
-            # No explicit pop(0) or clear needed if you want overlapping windows.
 
 except KeyboardInterrupt:
     print("\nExiting consumer loop.")
