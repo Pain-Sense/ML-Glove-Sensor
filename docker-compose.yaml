@@ -138,8 +138,6 @@ services:
     depends_on:
       - kafka
 
-
-      
   frontend:
     build:
       context: ./frontend

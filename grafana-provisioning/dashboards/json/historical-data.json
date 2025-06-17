@@ -107,7 +107,7 @@
             "type": "influxdb",
             "uid": "P951FEA4DE68E13C5"
           },
-          "query": "from(bucket: \"bucket1\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"processed_sensor_data\")\n  |> filter(fn: (r) => r.deviceId == \"${deviceId}\")\n  |> filter(fn: (r) => r._field == \"${field}\")\n  |> filter(fn: (r) =>\n      if \"${experimentId}\" == \"\" then true else r.experimentId == \"${experimentId}\"\n  )\n  |> aggregateWindow(every: 1s, fn: mean)\n  |> yield(name: \"mean\")\n",
+          "query": "from(bucket: \"bucket1\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"processed_sensor_data\")\n  |> filter(fn: (r) => r.deviceId == \"${deviceId}\")\n  |> filter(fn: (r) => r._field == \"${field}\")\n  |> filter(fn: (r) =>\n      if \"${experimentId}\" == \"\" then true else r.experimentId == \"${experimentId}\"\n  )\n  |> yield(name: \"mean\")\n",
           "refId": "A"
         }
       ],
