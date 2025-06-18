@@ -1,20 +1,16 @@
-Comandos para dar boot. (to be changed)
+# Instruções para Execução
 
-# This will run all the services as docker containers
-docker compose up --build
+## Requisitos
 
-# Grafana is available on: (username: admin and password: admin)
-http://localhost:3000/
+- Docker  
+- Docker Compose  
 
+## Como Executar
 
-# Testing info
+Para executar o projeto, basta correr o seguinte comando na raiz do projeto:  
+docker compose up --build  
 
-## Debug endpoints
+## Acesso ao Frontend
 
-### Get active devices
-
-Returns a list of devices that are actively sending sensor data (recently seen on the `SensorData` Kafka topic).
-
-```bash
-curl http://localhost:8089/debug/devices/active
-´´´
+Após o comando ser executado com sucesso, o frontend estará disponível no seguinte endereço:  
+http://localhost:5173/
